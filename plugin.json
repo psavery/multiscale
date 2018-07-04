@@ -1,0 +1,7 @@
+{
+    "name": "Albany Mechanics Runner",
+    "description": "Automate ellipsoidal mesh placement and subsequent Albany simulations.",
+    "url": "http://girder.readthedocs.io/en/latest/plugin/albanymechanicsrunner.html",
+    "version": "0.1.0",
+    "dependencies": ["worker"]
+}
