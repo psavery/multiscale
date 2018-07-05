@@ -1,95 +1,42 @@
 from girder.api import access
-from girder.constants import AccessType, registerAccessFlag
-from girder.api.describe import Description, autoDescribeRoute
-from girder.api.rest import Resource
+from girder.api.describe import Description, describeRoute
+from girder.api.rest import Resource, Prefix
 
-from girder.plugins.almech.models.almech_model import AlMechModel
+from girder_worker.app import app
+from celery.exceptions import TimeoutError
 
-class AlMechResource(Resource):
+from .docker import DockerTestEndpoints
+
+
+class CommonTestEndpoints(Resource):
     def __init__(self):
-        super(AlMechResource, self).__init__()
-        self.resourceName = 'almech'
+        super(CommonTestEndpoints, self).__init__()
 
-        self.route('GET', (), self.findAlMech)
-        self.route('GET', (':id',), self.getAlMech)
-        self.route('POST', (), self.createAlMech)
-        self.route('PUT', (':id',), self.updateAlMech)
-        self.route('DELETE', (':id',), self.deleteAlMech)
-        self.route('PUT', (':id', 'run'), self.runAlMech)
+        # POST because get_result is not idempotent.
+        self.route('POST', ('result', ), self.get_result)
 
-    @access.public
-    @autoDescribeRoute(
-    Description('Find an almech'))
-    def findAlMech(self, params):
-        print('findAlMech() was called!')
-        print('params is', params)
+    @access.token
+    @describeRoute(
+        Description('Utility endpoint to get an async result from a celery id')
+        .param('celery_id', 'celery async ID', dataType='string'))
+    def get_result(self, params):
+        cid = params['celery_id']
+        a1 = app.AsyncResult(cid)
 
-    @access.public
-    @autoDescribeRoute(
-    Description('Get an almech')
-    .modelParam('id', 'The almech ID', model=AlMechModel, level=AccessType.READ,
-                destName='doc'))
-    def getAlMech(self, doc, params):
-        print('getAlMech() was called!')
-        print('doc is', doc)
-        print('params is', params)
-        return doc
-
-    @access.public
-    @autoDescribeRoute(
-    Description('Create a almech'))
-    def createAlMech(self, params):
-        document = {}
-        alMechModel = AlMechModel().save(document)
-        return alMechModel
-
-    @access.public
-    @autoDescribeRoute(
-    Description('Update a almech')
-    .modelParam('id', 'The almech ID', model=AlMechModel, level=AccessType.WRITE))
-    def updateAlMech(self, params):
-        print("params is", params)
-        if 'almech_model' not in params:
-            print("Error: no almech model in the parameter!")
-            return
-
-        alMechModel = params['almech_model']
-        if '_id' not in alMechModel:
-            print("Error: missing id from alMechModel!")
-            return
-
-        id = alMechModel['_id']
-
-        print("id is", id)
-        print('updateAlMech() was called!')
-
-    @access.public
-    @autoDescribeRoute(
-    Description('Delete a almech')
-    .modelParam('id', 'The almech ID', model=AlMechModel, level=AccessType.WRITE,
-                destName='doc'))
-    def deleteAlMech(self, doc, params):
-        print('doc is', doc)
-        print('params is', params)
-        print('deleteAlMech() was called!')
-        AlMechModel().remove(doc)
-
-    registerAccessFlag(key='almech.run', name='Run an almech simulation',
-                       description='Allows users to run an almech simulation')
-
-    @access.user
-    @autoDescribeRoute(
-    Description('Run an almech simulation')
-    .modelParam('id', 'The almech ID', model=AlMechModel, plugin='almech',
-                 level=AccessType.WRITE, requiredFlags='almech.run',
-                 destName='doc'))
-    def runAlMech(self, doc, params):
-        print('doc is', doc)
-        print('params is', params)
-
-        # Run the almech
-        return AlMechModel().run(doc)
+        # Note: There is no reasonable way to validate a celery task
+        # asyncresult id. See:
+        # https://github.com/celery/celery/issues/3596#issuecomment-262102185
+        # This means for ALL values of celery_id return either the
+        # value or None. Note also that you will only be able to get
+        # the result via this method once. All subsequent calls will
+        # return None.
+        try:
+            return a1.get(timeout=0.2)
+        except TimeoutError:
+            return None
 
 
 def load(info):
-    info['apiRoot'].almech = AlMechResource()
+    info['apiRoot'].integration_tests = Prefix()
+    info['apiRoot'].integration_tests.common = CommonTestEndpoints()
+    info['apiRoot'].integration_tests.docker = DockerTestEndpoints()
