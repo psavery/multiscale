@@ -37,6 +37,6 @@ class CommonTestEndpoints(Resource):
 
 
 def load(info):
-    info['apiRoot'].integration_tests = Prefix()
-    info['apiRoot'].integration_tests.common = CommonTestEndpoints()
-    info['apiRoot'].integration_tests.docker = DockerTestEndpoints()
+    info['apiRoot'].almech_tests = Prefix()
+    info['apiRoot'].almech_tests.common = CommonTestEndpoints()
+    info['apiRoot'].almech_tests.docker = DockerTestEndpoints()
