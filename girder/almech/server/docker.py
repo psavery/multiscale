@@ -31,7 +31,6 @@ from girder_worker.docker.transforms.girder import (
 from girder_worker.utils import JobStatus
 from .utilities import wait_for_status
 
-TEST_IMAGE = 'girder/girder_worker_test:ng'
 ALBANY_IMAGE = 'psavery/albany'
 
 class DockerTestEndpoints(Resource):
@@ -41,10 +40,6 @@ class DockerTestEndpoints(Resource):
                    self.run_albany)
         self.route('POST', ('run_albany_from_girder_folder', ),
                    self.run_albany_from_girder_folder)
-        self.route('POST', ('test_docker_run_file_upload_to_item', ),
-                   self.test_docker_run_file_upload_to_item)
-        self.route('POST', ('test_docker_run_cancel', ),
-                   self.test_docker_run_cancel)
 
     @access.token
     @filtermodel(model='job', plugin='jobs')
@@ -84,38 +79,5 @@ class DockerTestEndpoints(Resource):
             ALBANY_IMAGE, pull_image=False, container_args=[filename],
             entrypoint='/usr/local/albany/bin/AlbanyT', remove_container=True,
             working_dir=volume, girder_result_hooks=[GirderUploadVolumePathToFolder(volumepath, outputFolderId)])
-
-        return result.job
-
-    @access.token
-    @filtermodel(model='job', plugin='jobs')
-    @describeRoute(
-        Description('Test uploading output file to item.'))
-    def test_docker_run_file_upload_to_item(self, params):
-        item_id = params.get('itemId')
-        contents = params.get('contents')
-
-        volumepath = VolumePath('test_file')
-
-        result = docker_run.delay(
-            TEST_IMAGE, pull_image=True,
-            container_args=['write', '-p', volumepath, '-m', contents],
-            remove_container=True,
-            girder_result_hooks=[GirderUploadVolumePathToItem(volumepath, item_id)])
-
-        return result.job
-
-    @access.token
-    @filtermodel(model='job', plugin='jobs')
-    @describeRoute(
-        Description('Test cancel docker_run.'))
-    def test_docker_run_cancel(self, params):
-        mode = params.get('mode')
-        result = docker_run.delay(
-            TEST_IMAGE, pull_image=True, container_args=[mode],
-            remove_container=True)
-
-        assert wait_for_status(self.getCurrentUser(), result.job, JobStatus.RUNNING)
-        result.revoke()
 
         return result.job
