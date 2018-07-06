@@ -28,65 +28,42 @@ from girder_worker.utils import JobStatus
 from .utilities import wait_for_status
 
 TEST_IMAGE = 'girder/girder_worker_test:ng'
-
+ALBANY_IMAGE = 'psavery/albany'
 
 class DockerTestEndpoints(Resource):
     def __init__(self):
         super(DockerTestEndpoints, self).__init__()
-        self.route('POST', ('test_docker_run', ),
-                   self.test_docker_run)
-        self.route('POST', ('test_docker_run_mount_volume', ),
-                   self.test_docker_run_mount_volume)
+        self.route('POST', ('run_albany', ),
+                   self.run_albany)
         self.route('POST', ('test_docker_run_file_upload_to_item', ),
                    self.test_docker_run_file_upload_to_item)
         self.route('POST', ('test_docker_run_girder_file_to_volume', ),
                    self.test_docker_run_girder_file_to_volume)
-        self.route('POST', ('test_docker_run_raises_exception', ),
-                   self.test_docker_run_raises_exception)
         self.route('POST', ('test_docker_run_cancel', ),
                    self.test_docker_run_cancel)
 
     @access.token
     @filtermodel(model='job', plugin='jobs')
-    @describeRoute(
-        Description('Test basic docker_run.'))
-    def test_docker_run(self, params):
-        result = docker_run.delay(
-            TEST_IMAGE, pull_image=True, container_args=['stdio', '-m', 'hello docker!'],
-            remove_container=True)
-
-        return result.job
-
-    @access.token
-    @filtermodel(model='job', plugin='jobs')
-    @describeRoute(
-        Description('Test docker run that raises an exception.'))
-    def test_docker_run_raises_exception(self, params):
-        result = docker_run.delay(
-            TEST_IMAGE, pull_image=True, container_args=['raise_exception'], remove_container=True)
-        return result.job
-
-    @access.token
-    @filtermodel(model='job', plugin='jobs')
-    @describeRoute(
-        Description('Test mounting a volume.'))
-    def test_docker_run_mount_volume(self, params):
-        fixture_dir = params.get('fixtureDir')
-        filename = 'read.txt'
+    @autoDescribeRoute(
+    Description('Run Albany on an input.yaml file')
+    .param('workingDir', 'The path to the Albany working directory. "input.yaml" must be inside.',
+           paramType='query', dataType='string', required='True'))
+    def run_albany(self, params):
+        workingDir = params.get('workingDir')
+        filename = 'input.yaml'
         mount_dir = '/mnt/test'
-        mount_path = os.path.join(mount_dir, filename)
         volumes = {
-            fixture_dir: {
+            workingDir : {
                 'bind': mount_dir,
-                'mode': 'ro'
+                'mode': 'rw'
             }
         }
         result = docker_run.delay(
-            TEST_IMAGE, pull_image=True, container_args=['read', '-p', mount_path],
-            remove_container=True, volumes=volumes)
+            ALBANY_IMAGE, pull_image=False, container_args=[filename],
+            entrypoint='/usr/local/albany/bin/AlbanyT', remove_container=True,
+            volumes=volumes, working_dir=mount_dir)
 
         return result.job
-
 
     @access.token
     @filtermodel(model='job', plugin='jobs')
