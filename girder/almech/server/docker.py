@@ -15,6 +15,7 @@ from girder.constants import AccessType
 
 from girder_worker.docker.tasks import docker_run
 from girder_worker.docker.transforms import (
+    BindMountVolume,
     HostStdOut,
     NamedOutputPipe,
     Connect,
@@ -22,6 +23,7 @@ from girder_worker.docker.transforms import (
     VolumePath
 )
 from girder_worker.docker.transforms.girder import (
+    GirderUploadVolumePathToFolder,
     GirderUploadVolumePathToItem,
     GirderFileIdToVolume,
     GirderFolderIdToVolume
@@ -41,8 +43,6 @@ class DockerTestEndpoints(Resource):
                    self.run_albany_from_girder_folder)
         self.route('POST', ('test_docker_run_file_upload_to_item', ),
                    self.test_docker_run_file_upload_to_item)
-        self.route('POST', ('test_docker_run_girder_file_to_volume', ),
-                   self.test_docker_run_girder_file_to_volume)
         self.route('POST', ('test_docker_run_cancel', ),
                    self.test_docker_run_cancel)
 
@@ -56,16 +56,11 @@ class DockerTestEndpoints(Resource):
         workingDir = params.get('workingDir')
         filename = 'input.yaml'
         mount_dir = '/mnt/test'
-        volumes = {
-            workingDir : {
-                'bind': mount_dir,
-                'mode': 'rw'
-            }
-        }
+        vol = BindMountVolume(workingDir, mount_dir)
         result = docker_run.delay(
             ALBANY_IMAGE, pull_image=False, container_args=[filename],
             entrypoint='/usr/local/albany/bin/AlbanyT', remove_container=True,
-            volumes=volumes, working_dir=mount_dir)
+            volumes=[vol], working_dir=mount_dir)
 
         return result.job
 
@@ -74,15 +69,21 @@ class DockerTestEndpoints(Resource):
     @autoDescribeRoute(
     Description('Run Albany from a girder folder')
     .param('folderId', 'The id of the folder on girder. "input.yaml" must be inside.',
+           paramType='query', dataType='string', required='True')
+    .param('outputFolderId', 'The id of the output folder on girder.',
            paramType='query', dataType='string', required='True'))
     def run_albany_from_girder_folder(self, params):
         folderId = params.get('folderId')
+        outputFolderId = params.get('outputFolderId')
         filename = 'input.yaml'
-        volume = GirderFolderIdToVolume(folderId, volume=TemporaryVolume.default)
+        folder_name = 'workingDir'
+        volume = GirderFolderIdToVolume(folderId, volume=TemporaryVolume.default, folder_name=folder_name)
+        outputDir = folderId + '/' + folder_name + '/output.exo'
+        volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
             ALBANY_IMAGE, pull_image=False, container_args=[filename],
             entrypoint='/usr/local/albany/bin/AlbanyT', remove_container=True,
-            working_dir=volume)
+            working_dir=volume, girder_result_hooks=[GirderUploadVolumePathToFolder(volumepath, outputFolderId)])
 
         return result.job
 
@@ -101,22 +102,6 @@ class DockerTestEndpoints(Resource):
             container_args=['write', '-p', volumepath, '-m', contents],
             remove_container=True,
             girder_result_hooks=[GirderUploadVolumePathToItem(volumepath, item_id)])
-
-        return result.job
-
-
-    @access.token
-    @filtermodel(model='job', plugin='jobs')
-    @describeRoute(
-        Description('Test download to volume.'))
-    def test_docker_run_girder_file_to_volume(self, params):
-        file_id = params.get('fileId')
-
-        result = docker_run.delay(
-            TEST_IMAGE, pull_image=True,
-            container_args=['read_write', '-i', GirderFileIdToVolume(file_id),
-                            '-o', Connect(NamedOutputPipe('out'), HostStdOut())],
-            remove_container=True)
 
         return result.job
 
