@@ -16,9 +16,9 @@ from girder_worker.docker.transforms.girder import (
 ALBANY_IMAGE = 'psavery/albany'
 
 
-class AlMechEndpoints(Resource):
+class MultiscaleEndpoints(Resource):
     def __init__(self):
-        super(AlMechEndpoints, self).__init__()
+        super(MultiscaleEndpoints, self).__init__()
         self.route('POST', ('run_albany_local', ),
                    self.run_albany_local)
         self.route('POST', ('run_albany_from_girder_folder', ),

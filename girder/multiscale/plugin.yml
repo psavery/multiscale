@@ -1,0 +1,6 @@
+name: Multiscale Modeling
+description: Multiscale mechanics simulations
+url: http://girder.readthedocs.io/en/latest/plugin/multiscalemodeling.html
+version: 0.1.0
+dependencies:
+  - worker
