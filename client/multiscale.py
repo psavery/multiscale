@@ -23,12 +23,24 @@ def getClient(apiKey):
     return gc
 
 
-def jobStatus(gc, args):
+def statusFunc(gc, args):
     jobId = args.job_id
     ju = JobUtils(gc)
     statusStr = ju.jobStatus(jobId)
     print('jobId:', jobId)
     print('status:', statusStr)
+
+
+def listFunc(gc, args):
+    userId = args.user_id
+    ju = JobUtils(gc)
+    jobList = ju.getAllJobsForUser(userId)
+
+    print('=' * 40)
+    print('{:30s} {:8s}'.format('jobId', 'status'))
+    print('=' * 40)
+    for jobId in jobList.keys():
+        print('{:30s} {:8s}'.format(jobId, jobList[jobId]))
 
 
 if __name__ == '__main__':
@@ -46,7 +58,12 @@ if __name__ == '__main__':
     status = sub.add_parser('status', help='Get the job status for a '
                                            'given job id.')
     status.add_argument('job_id', help='The job id')
-    status.set_defaults(func=jobStatus)
+    status.set_defaults(func=statusFunc)
+
+    listJobs = sub.add_parser('list', help='Get the list of jobs and their'
+                                           'statuses for a given user id.')
+    listJobs.add_argument('user_id', help='The user id')
+    listJobs.set_defaults(func=listFunc)
 
     args = parser.parse_args()
 
