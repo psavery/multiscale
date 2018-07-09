@@ -140,7 +140,7 @@ if __name__ == '__main__':
     status.add_argument('job_id', help='The job id')
     status.set_defaults(func=statusFunc)
 
-    listJobs = sub.add_parser('list', help='Get the list of jobs and their'
+    listJobs = sub.add_parser('list', help='Get the list of jobs and their '
                                            'statuses for the current user.')
     listJobs.set_defaults(func=listFunc)
 
