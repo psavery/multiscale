@@ -93,7 +93,7 @@ def cleanFunc(gc, args):
 
     # Double check with the user since this can be significant and irreversible
     question = ('This will permanently delete all jobs and outputs for '
-                'userId: \n"' + str(userId) + '"\n except for jobs that are '
+                'userId: \n"' + str(userId) + '"\nexcept for jobs that are '
                 'currently inactive, queued, or running\n'
                 'Are you completely sure that you want to do this?')
     if not query_yes_no(question, default="no"):
