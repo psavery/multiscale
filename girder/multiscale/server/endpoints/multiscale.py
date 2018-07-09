@@ -13,6 +13,8 @@ from girder_worker.docker.transforms.girder import (
     GirderFolderIdToVolume
 )
 
+from girder.plugins.jobs.models.job import Job
+
 ALBANY_IMAGE = 'psavery/albany'
 
 
@@ -25,7 +27,7 @@ class MultiscaleEndpoints(Resource):
                    self.run_albany_from_girder_folder)
 
     @access.token
-    @filtermodel(model='job', plugin='jobs')
+    @filtermodel(model=Job)
     @autoDescribeRoute(
         Description('Run Albany on an input.yaml file')
         .param('workingDir', 'The path to the Albany working directory. '
@@ -44,7 +46,7 @@ class MultiscaleEndpoints(Resource):
         return result.job
 
     @access.token
-    @filtermodel(model='job', plugin='jobs')
+    @filtermodel(model=Job)
     @autoDescribeRoute(
         Description('Run Albany from a girder folder')
         .param('inputFolderId', 'The id of the input folder on girder.'
@@ -60,7 +62,7 @@ class MultiscaleEndpoints(Resource):
         folder_name = 'workingDir'
         volume = GirderFolderIdToVolume(inputFolderId,
             volume=TemporaryVolume.default, folder_name=folder_name)
-        outputDir = folderId + '/' + folder_name + '/output.exo'
+        outputDir = inputFolderId + '/' + folder_name + '/output.exo'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
             ALBANY_IMAGE, pull_image=False, container_args=[filename],
