@@ -4,8 +4,10 @@ import os
 import sys
 
 import girder_client
+from girder_client import HttpError
 
 from utilities.job_utils import JobUtils
+from utilities.user_utils import UserUtils
 from utilities.query_yes_no import query_yes_no
 
 API_URL = 'http://localhost:8080/api/v1'
@@ -19,7 +21,15 @@ def getClient(apiKey):
                      'See --help for more info')
 
     gc = girder_client.GirderClient(apiUrl=API_URL)
-    gc.authenticate(apiKey=apiKey)
+
+    try:
+        gc.authenticate(apiKey=apiKey)
+    except HttpError as e:
+        if e.status == 500:
+            print("Error: invalid api key")
+            return None
+
+        raise
 
     return gc
 
@@ -37,11 +47,14 @@ def statusFunc(gc, args):
 
 
 def listFunc(gc, args):
-    userId = args.user_id
+    uu = UserUtils(gc)
+    userId = uu.getCurrentUserId()
+
     ju = JobUtils(gc)
     jobList = ju.getAllJobsForUser(userId)
 
     if not jobList:
+        print("No jobs found")
         return
 
     print('=' * 40)
@@ -75,7 +88,8 @@ def deleteFunc(gc, args):
 
 
 def cleanFunc(gc, args):
-    userId = args.user_id
+    uu = UserUtils(gc)
+    userId = uu.getCurrentUserId()
 
     # Double check with the user since this can be significant and irreversible
     question = ('This will permanently delete all jobs and outputs for '
@@ -120,8 +134,7 @@ if __name__ == '__main__':
     status.set_defaults(func=statusFunc)
 
     listJobs = sub.add_parser('list', help='Get the list of jobs and their'
-                                           'statuses for a given user id.')
-    listJobs.add_argument('user_id', help='The user id')
+                                           'statuses for the current user.')
     listJobs.set_defaults(func=listFunc)
 
     cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')
@@ -134,13 +147,15 @@ if __name__ == '__main__':
 
     clean = sub.add_parser('clean', help='Delete all jobs that are not '
                                          'inactive, queued, or running '
-                                         'for a specified user id.')
-    clean.add_argument('user_id', help='The user id')
+                                         'for the current user.')
     clean.set_defaults(func=cleanFunc)
 
     args = parser.parse_args()
 
     apiKey = args.api_key
     gc = getClient(apiKey)
+
+    if not gc:
+        sys.exit()
 
     args.func(gc, args)
