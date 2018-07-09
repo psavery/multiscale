@@ -27,6 +27,10 @@ def statusFunc(gc, args):
     jobId = args.job_id
     ju = JobUtils(gc)
     statusStr = ju.jobStatus(jobId)
+
+    if not statusStr:
+        return
+
     print('jobId:', jobId)
     print('status:', statusStr)
 
@@ -36,11 +40,20 @@ def listFunc(gc, args):
     ju = JobUtils(gc)
     jobList = ju.getAllJobsForUser(userId)
 
+    if not jobList:
+        return
+
     print('=' * 40)
     print('{:30s} {:8s}'.format('jobId', 'status'))
     print('=' * 40)
     for jobId in jobList.keys():
         print('{:30s} {:8s}'.format(jobId, jobList[jobId]))
+
+
+def cancelFunc(gc, args):
+    jobId = args.job_id
+    ju = JobUtils(gc)
+    ju.cancelJob(jobId)
 
 
 if __name__ == '__main__':
@@ -64,6 +77,10 @@ if __name__ == '__main__':
                                            'statuses for a given user id.')
     listJobs.add_argument('user_id', help='The user id')
     listJobs.set_defaults(func=listFunc)
+
+    cancel = sub.add_parser('cancel', help='Cancel a job for a given job id')
+    cancel.add_argument('job_id', help='The job id')
+    cancel.set_defaults(func=cancelFunc)
 
     args = parser.parse_args()
 

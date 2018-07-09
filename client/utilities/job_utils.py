@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from girder_client import HttpError
+
 class JobUtils:
 
     JOB_LIST_PATH = '/job'
@@ -36,7 +38,13 @@ class JobUtils:
 
     def jobStatus(self, jobId):
         params = { "id" : jobId }
-        resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
+        try:
+            resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print("Error. invalid job id:", jobId)
+                return {}
+            raise
 
         if not resp:
             return ""
@@ -47,16 +55,15 @@ class JobUtils:
         return statusStr
 
 
-    def cancelJob(self, jobId):
-        params = { "id" : jobId }
-        resp = self.gc.put(JobUtils.JOB_CANCEL_PATH, parameters=params)
-
-        print('resp is', resp)
-
-
     def getAllJobsForUser(self, userId):
         params = { "userId" : userId }
-        resp = self.gc.get(JobUtils.JOB_LIST_PATH, parameters=params)
+        try:
+            resp = self.gc.get(JobUtils.JOB_LIST_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print("Error. invalid user id:", userId)
+                return {}
+            raise
 
         output = {}
         for job in resp:
@@ -68,3 +75,14 @@ class JobUtils:
             output[jobId] = statusStr
 
         return output
+
+
+    def cancelJob(self, jobId):
+        params = { "id" : jobId }
+        try:
+            return self.gc.put(JobUtils.JOB_CANCEL_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print("Error. invalid job id:", jobId)
+                return {}
+            raise
