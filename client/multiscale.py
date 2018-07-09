@@ -132,8 +132,9 @@ if __name__ == '__main__':
     delete.add_argument('job_id', help='The job id')
     delete.set_defaults(func=deleteFunc)
 
-    clean = sub.add_parser('clean', help='Delete all jobs that are not queued '
-                                         'or running for a specified user id.')
+    clean = sub.add_parser('clean', help='Delete all jobs that are not '
+                                         'inactive, queued, or running '
+                                         'for a specified user id.')
     clean.add_argument('user_id', help='The user id')
     clean.set_defaults(func=cleanFunc)
 
