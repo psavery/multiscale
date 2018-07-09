@@ -12,7 +12,6 @@ from utilities.query_yes_no import query_yes_no
 
 API_URL = 'http://localhost:8080/api/v1'
 
-
 def getClient(apiKey):
     if not apiKey:
         apiKey = os.getenv('GIRDER_API_KEY')
@@ -151,6 +150,10 @@ if __name__ == '__main__':
     clean.set_defaults(func=cleanFunc)
 
     args = parser.parse_args()
+
+    if not getattr(args, 'func', None):
+        parser.print_help()
+        sys.exit()
 
     apiKey = args.api_key
     gc = getClient(apiKey)
