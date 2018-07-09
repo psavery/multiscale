@@ -6,6 +6,7 @@ import sys
 import girder_client
 
 from utilities.job_utils import JobUtils
+from utilities.query_yes_no import query_yes_no
 
 API_URL = 'http://localhost:8080/api/v1'
 
@@ -56,6 +57,51 @@ def cancelFunc(gc, args):
     ju.cancelJob(jobId)
 
 
+def deleteFunc(gc, args):
+    jobId = args.job_id
+    ju = JobUtils(gc)
+
+    # Make sure the job isn't running first. If it is, cancel it first.
+    statusStr = ju.jobStatus(jobId)
+    if statusStr == 'RUNNING':
+        print('Job is currently running. Canceling first...')
+        ju.cancelJob(jobId)
+    if statusStr == 'RUNNING' or statusStr == 'CANCELING':
+        print('Job is canceling. Please wait...')
+        while ju.jobStatus(jobId) != 'CANCELED':
+            continue
+
+    ju.deleteJob(jobId)
+
+
+def cleanFunc(gc, args):
+    userId = args.user_id
+
+    # Double check with the user since this can be significant and irreversible
+    question = ('This will permanently delete all jobs and outputs for '
+                'userId: \n"' + str(userId) + '"\n except for jobs that are '
+                'currently inactive, queued, or running\n'
+                'Are you completely sure that you want to do this?')
+    if not query_yes_no(question, default="no"):
+        return
+
+    ju = JobUtils(gc)
+    jobList = ju.getAllJobsForUser(userId)
+
+    if not jobList:
+        return
+
+    for jobId in jobList.keys():
+        if jobList[jobId] == "INACTIVE":
+            continue
+        elif jobList[jobId] == "QUEUED":
+            continue
+        elif jobList[jobId] == "RUNNING":
+            continue
+        else:
+            ju.deleteJob(jobId)
+
+
 if __name__ == '__main__':
 
     import argparse
@@ -78,9 +124,18 @@ if __name__ == '__main__':
     listJobs.add_argument('user_id', help='The user id')
     listJobs.set_defaults(func=listFunc)
 
-    cancel = sub.add_parser('cancel', help='Cancel a job for a given job id')
+    cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')
     cancel.add_argument('job_id', help='The job id')
     cancel.set_defaults(func=cancelFunc)
+
+    delete = sub.add_parser('delete', help='Delete a job with a given job id.')
+    delete.add_argument('job_id', help='The job id')
+    delete.set_defaults(func=deleteFunc)
+
+    clean = sub.add_parser('clean', help='Delete all jobs that are not queued '
+                                         'or running for a specified user id.')
+    clean.add_argument('user_id', help='The user id')
+    clean.set_defaults(func=cleanFunc)
 
     args = parser.parse_args()
 

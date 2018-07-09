@@ -30,7 +30,7 @@ class JobUtils:
 
     @staticmethod
     def getJobStatusStr(status):
-        if not status:
+        if not isinstance(status, int):
             return ""
 
         return JobUtils.JOB_STATUS.get(status, "")
@@ -56,7 +56,10 @@ class JobUtils:
 
 
     def getAllJobsForUser(self, userId):
-        params = { "userId" : userId }
+        params = {
+            "userId" : userId,
+            "limit" : 1000000
+        }
         try:
             resp = self.gc.get(JobUtils.JOB_LIST_PATH, parameters=params)
         except HttpError as e:
@@ -81,6 +84,17 @@ class JobUtils:
         params = { "id" : jobId }
         try:
             return self.gc.put(JobUtils.JOB_CANCEL_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print("Error. invalid job id:", jobId)
+                return {}
+            raise
+
+
+    def deleteJob(self, jobId):
+        params = { "id" : jobId }
+        try:
+            return self.gc.delete(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
                 print("Error. invalid job id:", jobId)
