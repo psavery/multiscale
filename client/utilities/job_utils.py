@@ -80,6 +80,23 @@ class JobUtils:
         return output
 
 
+    def getJobLog(self, jobId):
+        params = { "id" : jobId }
+        try:
+            resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print("Error. invalid job id:", jobId)
+                return {}
+            raise
+
+        if not resp:
+            return ""
+
+        log = resp.get('log', "")
+        return log
+
+
     def cancelJob(self, jobId):
         params = { "id" : jobId }
         try:

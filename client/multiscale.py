@@ -63,6 +63,14 @@ def listFunc(gc, args):
         print('{:30s} {:8s}'.format(jobId, jobList[jobId]))
 
 
+def logFunc(gc, args):
+    jobId = args.job_id
+    ju = JobUtils(gc)
+    log = ju.getJobLog(jobId)
+    for entry in log:
+        print(entry)
+
+
 def cancelFunc(gc, args):
     jobId = args.job_id
     ju = JobUtils(gc)
@@ -135,6 +143,10 @@ if __name__ == '__main__':
     listJobs = sub.add_parser('list', help='Get the list of jobs and their'
                                            'statuses for the current user.')
     listJobs.set_defaults(func=listFunc)
+
+    log = sub.add_parser('log', help='Print the log for a given job id.')
+    log.add_argument('job_id', help='The job id')
+    log.set_defaults(func=logFunc)
 
     cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')
     cancel.add_argument('job_id', help='The job id')
