@@ -1,4 +1,4 @@
-from .almech_endpoints import AlMechEndpoints
+from .endpoints.almech import AlMechEndpoints
 
 def load(info):
     info['apiRoot'].almech = AlMechEndpoints()
