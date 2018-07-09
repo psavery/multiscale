@@ -47,18 +47,19 @@ class MultiscaleEndpoints(Resource):
     @filtermodel(model='job', plugin='jobs')
     @autoDescribeRoute(
         Description('Run Albany from a girder folder')
-        .param('folderId', 'The id of the folder on girder.'
-               '"input.yaml" must be inside.',
+        .param('inputFolderId', 'The id of the input folder on girder.'
+               '"input.yaml" must be inside, along with any other '
+               'necessary input files.',
                paramType='query', dataType='string', required='True')
         .param('outputFolderId', 'The id of the output folder on girder.',
                paramType='query', dataType='string', required='True'))
     def run_albany_from_girder_folder(self, params):
-        folderId = params.get('folderId')
+        inputFolderId = params.get('inputFolderId')
         outputFolderId = params.get('outputFolderId')
         filename = 'input.yaml'
         folder_name = 'workingDir'
-        volume = GirderFolderIdToVolume(
-            folderId, volume=TemporaryVolume.default, folder_name=folder_name)
+        volume = GirderFolderIdToVolume(inputFolderId,
+            volume=TemporaryVolume.default, folder_name=folder_name)
         outputDir = folderId + '/' + folder_name + '/output.exo'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
