@@ -75,7 +75,8 @@ class MultiscaleUtils:
         return True
 
 
-    def getOutputFolderId(self, jobId):
+    # folderType must be 'input' or 'output'
+    def getInputOrOutputFolderId(self, jobId, folderType):
         params = { "id" : jobId }
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
@@ -99,11 +100,28 @@ class MultiscaleUtils:
 
         multiscale_settings = metaData['multiscale_settings']
 
-        if 'outputFolderId' not in multiscale_settings:
-            print('Error: outputFolderId is not in multiscale_settings!')
+        folderIdName = ''
+        if folderType == 'input':
+            folderIdName = 'inputFolderId'
+        elif folderType == 'output':
+            folderIdName = 'outputFolderId'
+        else:
+            print("Error: unknown folder type:", folderType)
             return
 
-        return multiscale_settings['outputFolderId']
+        if folderIdName not in multiscale_settings:
+            print('Error:', folderIdName, 'is not in multiscale_settings!')
+            return
+
+        return multiscale_settings[folderIdName]
+
+
+    def getInputFolderId(self, jobId):
+        return self.getInputOrOutputFolderId(jobId, "input")
+
+
+    def getOutputFolderId(self, jobId):
+        return self.getInputOrOutputFolderId(jobId, "output")
 
 
     def getJobFolderId(self, jobId):
@@ -128,9 +146,26 @@ class MultiscaleUtils:
         return parentId
 
 
+    def getInputFolder(self, jobId):
+        inputFolderId = self.getInputFolderId(jobId)
+        return self.gc.getFolder(inputFolderId)
+
+
     def getOutputFolder(self, jobId):
         outputFolderId = self.getOutputFolderId(jobId)
         return self.gc.getFolder(outputFolderId)
+
+
+    def downloadJobInput(self, jobId):
+
+        inputFolder = self.getInputFolder(jobId)
+
+        folderId = inputFolder.get('_id', 'id_unknown')
+        folderName = inputFolder.get('name', 'name_unknown')
+
+        self.gc.downloadFolderRecursive(folderId, folderName)
+
+        print('Downloaded input to:', folderName)
 
 
     def downloadJobOutput(self, jobId):

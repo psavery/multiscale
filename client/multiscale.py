@@ -91,15 +91,23 @@ def logFunc(gc, args):
 
 def downloadFunc(gc, args):
     jobId = args.job_id
-
-    ju = JobUtils(gc)
-    statusStr = ju.jobStatus(jobId)
-    if statusStr != 'SUCCESS':
-        print('Warning: job status is not "SUCCESS". The output may '
-              'be missing or invalid')
+    download_type = args.input_or_output.lower()
 
     mu = MultiscaleUtils(gc)
-    mu.downloadJobOutput(jobId)
+
+    if download_type == 'input':
+        mu.downloadJobInput(jobId)
+    elif download_type == 'output':
+        ju = JobUtils(gc)
+        statusStr = ju.jobStatus(jobId)
+        if statusStr != 'SUCCESS':
+            print('Warning: job status is not "SUCCESS". The output may '
+                  'be missing or invalid')
+        mu.downloadJobOutput(jobId)
+    else:
+        print('Error: download type must be "input" or "output"')
+        return
+
 
 
 def cancelFunc(gc, args):
@@ -222,6 +230,7 @@ if __name__ == '__main__':
                                                 'for a given multiscale '
                                                 'job id.'))
     download.add_argument('job_id', help='The job id')
+    download.add_argument('input_or_output', help="Either 'input' or 'output'")
     download.set_defaults(func=downloadFunc)
 
     cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')
