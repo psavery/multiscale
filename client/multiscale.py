@@ -16,6 +16,10 @@ from utilities.query_yes_no import query_yes_no
 
 API_URL = 'http://localhost:8080/api/v1'
 
+supportedCalculations = [
+    "albany"
+]
+
 def getClient(apiKey):
     if not apiKey:
         apiKey = os.getenv('MULTISCALE_API_KEY')
@@ -189,10 +193,12 @@ if __name__ == '__main__':
                              '"MULTISCALE_API_KEY" may be set instead.')
 
     sub = parser.add_subparsers()
-    submit = sub.add_parser('submit', help='Submit a folder')
+    submit = sub.add_parser('submit', help=('Submit a multiscale job along '
+                                            'with its input folder.'))
     submit.add_argument('calculation_type', help=('The type of simulation to '
                                                   'perform. Current supported '
-                                                  'types are: albany'))
+                                                  'types are: ' +
+                                                  ', '.join(supportedCalculations)))
     submit.add_argument('input_dir', help=('The directory containing all input '
                                            'files that will be uploaded to '
                                            'Girder and used for the '
