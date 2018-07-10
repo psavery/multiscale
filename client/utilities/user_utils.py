@@ -10,8 +10,8 @@ class UserUtils:
 
     def getCurrentUserId(self):
         resp = self.gc.get(UserUtils.ME_PATH)
-        if resp and "_id" in resp:
-            return resp["_id"]
+        if resp and '_id' in resp:
+            return resp['_id']
         else:
-            print("Warning: current user ID not found!")
+            print('Warning: current user ID not found!')
             return None

@@ -43,19 +43,19 @@ class MultiscaleUtils:
                 break
 
         if not workingDirName:
-            print("Error: the maximum number of jobs has been exceeded.",
-                  "\nPlease delete some jobs in your folder.")
+            print('Error: the maximum number of jobs has been exceeded.',
+                  '\nPlease delete some jobs in your folder.')
             return
 
         return self.gc.createFolder(baseFolderId, workingDirName)
 
     def isMultiscaleJob(self, jobId):
-        params = {"id": jobId}
+        params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid job id:", jobId)
+                print('Error. invalid job id:', jobId)
                 return False
             raise
 
@@ -75,12 +75,12 @@ class MultiscaleUtils:
     # folderType must be 'input' or 'output'
 
     def getInputOrOutputFolderId(self, jobId, folderType):
-        params = {"id": jobId}
+        params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid job id:", jobId)
+                print('Error. invalid job id:', jobId)
                 return
             raise
 
@@ -104,7 +104,7 @@ class MultiscaleUtils:
         elif folderType == 'output':
             folderIdName = 'outputFolderId'
         else:
-            print("Error: unknown folder type:", folderType)
+            print('Error: unknown folder type:', folderType)
             return
 
         if folderIdName not in multiscale_settings:
@@ -114,10 +114,10 @@ class MultiscaleUtils:
         return multiscale_settings[folderIdName]
 
     def getInputFolderId(self, jobId):
-        return self.getInputOrOutputFolderId(jobId, "input")
+        return self.getInputOrOutputFolderId(jobId, 'input')
 
     def getOutputFolderId(self, jobId):
-        return self.getInputOrOutputFolderId(jobId, "output")
+        return self.getInputOrOutputFolderId(jobId, 'output')
 
     def getJobFolderId(self, jobId):
         outputFolderId = self.getOutputFolderId(jobId)
@@ -172,7 +172,7 @@ class MultiscaleUtils:
 
     def runAlbanyJob(self, inputFolderId, outputFolderId):
         params = {
-            "inputFolderId": inputFolderId,
-            "outputFolderId": outputFolderId
+            'inputFolderId': inputFolderId,
+            'outputFolderId': outputFolderId
         }
         return self.gc.post(MultiscaleUtils.RUN_ALBANY_PATH, parameters=params)

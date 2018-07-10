@@ -60,8 +60,10 @@ class MultiscaleEndpoints(Resource):
         outputFolderId = params.get('outputFolderId')
         filename = 'input.yaml'
         folder_name = 'workingDir'
-        volume = GirderFolderIdToVolume(inputFolderId,
-                                        volume=TemporaryVolume.default, folder_name=folder_name)
+        volume = GirderFolderIdToVolume(
+            inputFolderId,
+            volume=TemporaryVolume.default,
+            folder_name=folder_name)
         outputDir = inputFolderId + '/' + folder_name + '/output.exo'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(

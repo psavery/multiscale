@@ -17,7 +17,7 @@ from utilities.query_yes_no import query_yes_no
 API_URL = 'http://localhost:8080/api/v1'
 
 supportedCalculations = [
-    "albany"
+    'albany'
 ]
 
 
@@ -34,7 +34,7 @@ def getClient(apiKey):
         gc.authenticate(apiKey=apiKey)
     except HttpError as e:
         if e.status == 500:
-            print("Error: invalid api key")
+            print('Error: invalid api key')
             return None
 
         raise
@@ -49,7 +49,7 @@ def submitFunc(gc, args):
     if calcType == 'albany':
         submitAlbanyCalculation(gc, inputDir)
     else:
-        print("Error: unsupported calculation type:", calcType)
+        print('Error: unsupported calculation type:', calcType)
 
 
 def statusFunc(gc, args):
@@ -72,7 +72,7 @@ def listFunc(gc, args):
     jobList = ju.getAllJobsForUser(userId)
 
     if not jobList:
-        print("No jobs found")
+        print('No jobs found')
         return
 
     print('=' * 40)
@@ -127,7 +127,7 @@ def deleteFunc(gc, args):
         question = ('This will permanently delete the output folder for this '
                     'job and all of its contents.\nThe output folder is: ' +
                     folderPath + '\nAre you sure you want to delete this?')
-        if not query_yes_no(question, default="no"):
+        if not query_yes_no(question, default='no'):
             return
 
         deleteFolderId = folderId
@@ -157,7 +157,7 @@ def cleanFunc(gc, args):
                 'userId: \n"' + str(userId) + '"\nexcept for jobs that are '
                 'currently inactive, queued, or running\n'
                 'Are you completely sure that you want to do this?')
-    if not query_yes_no(question, default="no"):
+    if not query_yes_no(question, default='no'):
         return
 
     ju = JobUtils(gc)
@@ -169,11 +169,11 @@ def cleanFunc(gc, args):
     mu = MultiscaleUtils(gc)
     fu = FolderUtils(gc)
     for jobId in jobList.keys():
-        if jobList[jobId] == "INACTIVE":
+        if jobList[jobId] == 'INACTIVE':
             continue
-        elif jobList[jobId] == "QUEUED":
+        elif jobList[jobId] == 'QUEUED':
             continue
-        elif jobList[jobId] == "RUNNING":
+        elif jobList[jobId] == 'RUNNING':
             continue
         else:
             folderId = None
@@ -200,14 +200,19 @@ if __name__ == '__main__':
     sub = parser.add_subparsers()
     submit = sub.add_parser('submit', help=('Submit a multiscale job along '
                                             'with its input folder.'))
-    submit.add_argument('calculation_type', help=('The type of simulation to '
-                                                  'perform. Current supported '
-                                                  'types are: ' +
-                                                  ', '.join(supportedCalculations)))
-    submit.add_argument('input_dir', help=('The directory containing all input '
-                                           'files that will be uploaded to '
-                                           'Girder and used for the '
-                                           'simulation'))
+    submit.add_argument(
+        'calculation_type',
+        help=(
+            'The type of simulation to '
+            'perform. Current supported '
+            'types are: ' +
+            ', '.join(supportedCalculations)))
+    submit.add_argument(
+        'input_dir', help=(
+            'The directory containing all input '
+            'files that will be uploaded to '
+            'Girder and used for the '
+            'simulation'))
     submit.set_defaults(func=submitFunc)
 
     status = sub.add_parser('status', help='Get the job status for a '
@@ -228,8 +233,8 @@ if __name__ == '__main__':
                                                 'job id.'))
     download.add_argument('job_id', help='The job id')
     download.add_argument('-i', '--download-input', action='store_true',
-                          help=("Instead of downloading the output for this "
-                                "job, download the input."))
+                          help=('Instead of downloading the output for this '
+                                'job, download the input.'))
     download.set_defaults(func=downloadFunc)
 
     cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')

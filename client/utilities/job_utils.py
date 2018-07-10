@@ -30,22 +30,22 @@ class JobUtils:
     @staticmethod
     def getJobStatusStr(status):
         if not isinstance(status, int):
-            return ""
+            return ''
 
-        return JobUtils.JOB_STATUS.get(status, "")
+        return JobUtils.JOB_STATUS.get(status, '')
 
     def jobStatus(self, jobId):
-        params = {"id": jobId}
+        params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid job id:", jobId)
+                print('Error. invalid job id:', jobId)
                 return {}
             raise
 
         if not resp:
-            return ""
+            return ''
 
         status = resp.get('status')
 
@@ -54,14 +54,14 @@ class JobUtils:
 
     def getAllJobsForUser(self, userId):
         params = {
-            "userId": userId,
-            "limit": 1000000
+            'userId': userId,
+            'limit': 1000000
         }
         try:
             resp = self.gc.get(JobUtils.JOB_LIST_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid user id:", userId)
+                print('Error. invalid user id:', userId)
                 return {}
             raise
 
@@ -77,37 +77,37 @@ class JobUtils:
         return output
 
     def getJobLog(self, jobId):
-        params = {"id": jobId}
+        params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid job id:", jobId)
+                print('Error. invalid job id:', jobId)
                 return {}
             raise
 
         if not resp:
-            return ""
+            return ''
 
-        log = resp.get('log', "")
+        log = resp.get('log', '')
         return log
 
     def cancelJob(self, jobId):
-        params = {"id": jobId}
+        params = {'id': jobId}
         try:
             return self.gc.put(JobUtils.JOB_CANCEL_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid job id:", jobId)
+                print('Error. invalid job id:', jobId)
                 return {}
             raise
 
     def deleteJob(self, jobId):
-        params = {"id": jobId}
+        params = {'id': jobId}
         try:
             return self.gc.delete(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
-                print("Error. invalid job id:", jobId)
+                print('Error. invalid job id:', jobId)
                 return {}
             raise

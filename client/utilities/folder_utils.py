@@ -10,7 +10,7 @@ class FolderUtils:
         self.gc = gc
 
     def getFolder(self, folderId):
-        params = {"id": folderId}
+        params = {'id': folderId}
         return self.gc.get(FolderUtils.FOLDER_ID_PATH, parameters=params)
 
     def getFolderName(self, folderId):
@@ -31,5 +31,5 @@ class FolderUtils:
         return path
 
     def deleteFolder(self, folderId):
-        params = {"id": folderId}
+        params = {'id': folderId}
         self.gc.delete(FolderUtils.FOLDER_DELETE_PATH, parameters=params)

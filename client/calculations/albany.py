@@ -1,7 +1,7 @@
 
 # Because we need the utilities folder...
 import sys
-sys.path.append("..")
+sys.path.append('..')
 
 from utilities.multiscale_utils import MultiscaleUtils
 
@@ -25,5 +25,5 @@ def submitAlbanyCalculation(gc, inputDir):
 
     job = mu.runAlbanyJob(inputFolderId, outputFolderId)
 
-    print("Job submitted:", job['_id'])
-    print("Girder working directory:", baseFolderName + '/' + workingDirName)
+    print('Job submitted:', job['_id'])
+    print('Girder working directory:', baseFolderName + '/' + workingDirName)
