@@ -7,6 +7,7 @@ import girder_client
 from girder_client import HttpError
 
 from utilities.job_utils import JobUtils
+from utilities.multiscale_utils import MultiscaleUtils
 from utilities.user_utils import UserUtils
 from utilities.query_yes_no import query_yes_no
 
@@ -69,6 +70,19 @@ def logFunc(gc, args):
     log = ju.getJobLog(jobId)
     for entry in log:
         print(entry)
+
+
+def downloadFunc(gc, args):
+    jobId = args.job_id
+
+    ju = JobUtils(gc)
+    statusStr = ju.jobStatus(jobId)
+    if statusStr != 'SUCCESS':
+        print('Warning: job status is not "SUCCESS". The output may '
+              'be missing or invalid')
+
+    mu = MultiscaleUtils(gc)
+    mu.downloadJobOutput(jobId)
 
 
 def cancelFunc(gc, args):
@@ -147,6 +161,12 @@ if __name__ == '__main__':
     log = sub.add_parser('log', help='Print the log for a given job id.')
     log.add_argument('job_id', help='The job id')
     log.set_defaults(func=logFunc)
+
+    download = sub.add_parser('download', help=('Download the output folder '
+                                                'for a given multiscale '
+                                                'job id.'))
+    download.add_argument('job_id', help='The job id')
+    download.set_defaults(func=downloadFunc)
 
     cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')
     cancel.add_argument('job_id', help='The job id')
