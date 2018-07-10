@@ -1,23 +1,17 @@
 
+# Because we need the utilities folder...
 import sys
 sys.path.append("..")
 
 from utilities.multiscale_utils import MultiscaleUtils
-from utilities.user_utils import UserUtils
 
 MAX_JOBS = 10000
 
 def submitAlbanyCalculation(gc, inputDir):
     mu = MultiscaleUtils(gc)
-    uu = UserUtils(gc)
-    userId = uu.getCurrentUserId()
 
-    baseFolderName = 'multiscale_data'
-    baseFolder = gc.createFolder(userId, baseFolderName,
-                                 description='Data for multiscale calculations',
-                                 parentType='user', reuseExisting=True,
-                                 public=False)
-
+    baseFolderName = MultiscaleUtils.BASE_FOLDER_NAME
+    baseFolder = mu.getBaseFolder()
     baseFolderId = baseFolder['_id']
 
     folderNames = []
@@ -27,10 +21,8 @@ def submitAlbanyCalculation(gc, inputDir):
     baseName = 'job_'
     for i in range(1, MAX_JOBS + 1):
         workingDirName = baseName + str(i)
-        if workingDirName in folderNames:
-            continue
-
-        break
+        if workingDirName not in folderNames:
+            break
 
     workingFolder = gc.createFolder(baseFolderId, workingDirName)
 

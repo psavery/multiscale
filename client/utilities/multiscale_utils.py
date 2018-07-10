@@ -3,15 +3,26 @@
 from girder_client import HttpError
 
 from .job_utils import JobUtils
+from .user_utils import UserUtils
 
 class MultiscaleUtils:
 
-
     RUN_ALBANY_PATH = '/multiscale/run_albany_from_girder_folder'
 
+    BASE_FOLDER_NAME = 'multiscale_data'
 
     def __init__(self, gc):
         self.gc = gc
+
+
+    def getBaseFolder(self):
+        uu = UserUtils(self.gc)
+        userId = uu.getCurrentUserId()
+        return self.gc.createFolder(
+            userId, MultiscaleUtils.BASE_FOLDER_NAME,
+            description='Data for multiscale calculations',
+            parentType='user', reuseExisting=True,
+            public=False)
 
 
     def isMultiscaleJob(self, jobId):
