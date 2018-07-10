@@ -6,6 +6,7 @@ import sys
 import girder_client
 from girder_client import HttpError
 
+from utilities.folder_utils import FolderUtils
 from utilities.job_utils import JobUtils
 from utilities.multiscale_utils import MultiscaleUtils
 from utilities.user_utils import UserUtils
@@ -95,6 +96,21 @@ def deleteFunc(gc, args):
     jobId = args.job_id
     ju = JobUtils(gc)
 
+    # If it is a multiscale job, we may want to delete the output directory
+    deleteFolderId = None
+    mu = MultiscaleUtils(gc)
+    fu = FolderUtils(gc)
+    if mu.isMultiscaleJob(jobId):
+        folderId = mu.getOutputFolderId(jobId)
+        folderPath = fu.getFullFolderPath(folderId)
+        question = ('This will permanently delete the output folder for this '
+                    'job and all of its contents.\nThe output folder is: ' +
+                    folderPath + '\nAre you sure you want to delete this?')
+        if not query_yes_no(question, default="no"):
+            return
+
+        deleteFolderId = folderId
+
     # Make sure the job isn't running first. If it is, cancel it first.
     statusStr = ju.jobStatus(jobId)
     if statusStr == 'RUNNING':
@@ -106,6 +122,9 @@ def deleteFunc(gc, args):
             continue
 
     ju.deleteJob(jobId)
+
+    if deleteFolderId:
+        fu.deleteFolder(deleteFolderId)
 
 
 def cleanFunc(gc, args):
@@ -126,6 +145,8 @@ def cleanFunc(gc, args):
     if not jobList:
         return
 
+    mu = MultiscaleUtils(gc)
+    fu = FolderUtils(gc)
     for jobId in jobList.keys():
         if jobList[jobId] == "INACTIVE":
             continue
@@ -134,7 +155,14 @@ def cleanFunc(gc, args):
         elif jobList[jobId] == "RUNNING":
             continue
         else:
+            folderId = None
+            if mu.isMultiscaleJob(jobId):
+                folderId = mu.getOutputFolderId(jobId)
+
             ju.deleteJob(jobId)
+
+            if folderId:
+                fu.deleteFolder(folderId)
 
 
 if __name__ == '__main__':

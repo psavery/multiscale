@@ -11,14 +11,38 @@ class MultiscaleUtils:
         self.gc = gc
 
 
-    def getOutputFolder(self, jobId):
+    def isMultiscaleJob(self, jobId):
         params = { "id" : jobId }
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
             if e.status == 400:
                 print("Error. invalid job id:", jobId)
-                return {}
+                return False
+            raise
+
+        if not resp:
+            return False
+
+        metaData = resp.get('meta')
+
+        if not isinstance(metaData, dict):
+            return False
+
+        if 'multiscale_settings' not in metaData:
+            return False
+
+        return True
+
+
+    def getOutputFolderId(self, jobId):
+        params = { "id" : jobId }
+        try:
+            resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print("Error. invalid job id:", jobId)
+                return
             raise
 
         if not resp:
@@ -39,7 +63,11 @@ class MultiscaleUtils:
             print('Error: outputFolderId is not in multiscale_settings!')
             return
 
-        outputFolderId = multiscale_settings['outputFolderId']
+        return multiscale_settings['outputFolderId']
+
+
+    def getOutputFolder(self, jobId):
+        outputFolderId = self.getOutputFolderId(jobId)
         return self.gc.getFolder(outputFolderId)
 
 
