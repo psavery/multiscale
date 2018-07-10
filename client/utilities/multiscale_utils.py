@@ -10,6 +10,7 @@ class MultiscaleUtils:
     RUN_ALBANY_PATH = '/multiscale/run_albany_from_girder_folder'
 
     BASE_FOLDER_NAME = 'multiscale_data'
+    MAX_JOBS = 10000
 
     def __init__(self, gc):
         self.gc = gc
@@ -23,6 +24,30 @@ class MultiscaleUtils:
             description='Data for multiscale calculations',
             parentType='user', reuseExisting=True,
             public=False)
+
+
+    def createNewJobFolder(self):
+        baseFolder = self.getBaseFolder()
+        baseFolderId = baseFolder['_id']
+
+        folderNames = []
+        for folder in self.gc.listFolder(baseFolderId):
+            folderNames.append(folder['name'])
+
+        baseName = 'job_'
+        workingDirName = ''
+        for i in range(1, MultiscaleUtils.MAX_JOBS + 1):
+            tmpName = baseName + str(i)
+            if tmpName not in folderNames:
+                workingDirName = tmpName
+                break
+
+        if not workingDirName:
+            print("Error: the maximum number of jobs has been exceeded.",
+                  "\nPlease delete some jobs in your folder.")
+            return
+
+        return self.gc.createFolder(baseFolderId, workingDirName)
 
 
     def isMultiscaleJob(self, jobId):
