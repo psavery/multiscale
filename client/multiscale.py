@@ -18,7 +18,7 @@ API_URL = 'http://localhost:8080/api/v1'
 
 def getClient(apiKey):
     if not apiKey:
-        apiKey = os.getenv('GIRDER_API_KEY')
+        apiKey = os.getenv('MULTISCALE_API_KEY')
         if not apiKey:
             sys.exit('An api key is required to run this script. '
                      'See --help for more info')
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     parser.add_argument('-k', '--api-key',
                         help='A valid api key for accessing girder. '
                              'Alternatively, the environment variable '
-                             '"GIRDER_API_KEY" may be set instead.')
+                             '"MULTISCALE_API_KEY" may be set instead.')
 
     sub = parser.add_subparsers()
     submit = sub.add_parser('submit', help='Submit a folder')
