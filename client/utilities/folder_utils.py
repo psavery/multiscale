@@ -12,15 +12,17 @@ class FolderUtils:
         self.gc = gc
 
 
-    def getFolderName(self, folderId):
+    def getFolder(self, folderId):
         params = { "id" : folderId }
-        folder = self.gc.get(FolderUtils.FOLDER_ID_PATH, parameters=params)
-        return folder['name']
+        return self.gc.get(FolderUtils.FOLDER_ID_PATH, parameters=params)
+
+
+    def getFolderName(self, folderId):
+        return self.getFolder(folderId)['name']
 
 
     def getParentIdAndType(self, folderId):
-        params = { "id" : folderId }
-        folder = self.gc.get(FolderUtils.FOLDER_ID_PATH, parameters=params)
+        folder = self.getFolder(folderId)
         return folder['parentId'], folder['parentCollection']
 
 
