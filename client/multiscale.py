@@ -6,6 +6,8 @@ import sys
 import girder_client
 from girder_client import HttpError
 
+from calculations.albany import submitAlbanyCalculation
+
 from utilities.folder_utils import FolderUtils
 from utilities.job_utils import JobUtils
 from utilities.multiscale_utils import MultiscaleUtils
@@ -33,6 +35,16 @@ def getClient(apiKey):
         raise
 
     return gc
+
+
+def submitFunc(gc, args):
+    calcType = args.calculation_type.lower()
+    inputDir = args.input_dir
+
+    if calcType == 'albany':
+        submitAlbanyCalculation(gc, inputDir)
+    else:
+        print("Error: unsupported calculation type:", calcType)
 
 
 def statusFunc(gc, args):
@@ -177,6 +189,16 @@ if __name__ == '__main__':
                              '"GIRDER_API_KEY" may be set instead.')
 
     sub = parser.add_subparsers()
+    submit = sub.add_parser('submit', help='Submit a folder')
+    submit.add_argument('calculation_type', help=('The type of simulation to '
+                                                  'perform. Current supported '
+                                                  'types are: albany'))
+    submit.add_argument('input_dir', help=('The directory containing all input '
+                                           'files that will be uploaded to '
+                                           'Girder and used for the '
+                                           'simulation'))
+    submit.set_defaults(func=submitFunc)
+
     status = sub.add_parser('status', help='Get the job status for a '
                                            'given job id.')
     status.add_argument('job_id', help='The job id')

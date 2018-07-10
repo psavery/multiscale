@@ -7,6 +7,9 @@ from .job_utils import JobUtils
 class MultiscaleUtils:
 
 
+    RUN_ALBANY_PATH = '/multiscale/run_albany_from_girder_folder'
+
+
     def __init__(self, gc):
         self.gc = gc
 
@@ -81,3 +84,11 @@ class MultiscaleUtils:
         self.gc.downloadFolderRecursive(folderId, folderName)
 
         print('Downloaded output to:', folderName)
+
+
+    def runAlbanyJob(self, inputFolderId, outputFolderId):
+        params = {
+            "inputFolderId" : inputFolderId,
+            "outputFolderId" : outputFolderId
+        }
+        return self.gc.post(MultiscaleUtils.RUN_ALBANY_PATH, parameters=params)
