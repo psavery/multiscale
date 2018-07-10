@@ -1,3 +1,5 @@
+"""End points for our multiscale operations."""
+
 from girder.api import access
 from girder.api.describe import Description, autoDescribeRoute
 from girder.api.rest import Resource, filtermodel
@@ -19,7 +21,10 @@ ALBANY_IMAGE = 'psavery/albany'
 
 
 class MultiscaleEndpoints(Resource):
+    """End points for multiscale calculations."""
+
     def __init__(self):
+        """Initialize the various routes."""
         super(MultiscaleEndpoints, self).__init__()
         self.route('POST', ('run_albany_local', ),
                    self.run_albany_local)
@@ -29,11 +34,12 @@ class MultiscaleEndpoints(Resource):
     @access.token
     @filtermodel(model=Job)
     @autoDescribeRoute(
-        Description('Run Albany on an input.yaml file')
+        Description('Run Albany on an input.yaml file already on the server')
         .param('workingDir', 'The path to the Albany working directory. '
                '"input.yaml" must be inside.',
                paramType='query', dataType='string', required='True'))
     def run_albany_local(self, params):
+        """Run albany on an input.yaml file already on the server."""
         workingDir = params.get('workingDir')
         filename = 'input.yaml'
         mount_dir = '/mnt/test'
@@ -51,11 +57,16 @@ class MultiscaleEndpoints(Resource):
         Description('Run Albany from a girder folder')
         .param('inputFolderId', 'The id of the input folder on girder.'
                '"input.yaml" must be inside, along with any other '
-               'necessary input files.',
+               'necessary input files. Will store the output in the '
+               'specified output folder.',
                paramType='query', dataType='string', required='True')
         .param('outputFolderId', 'The id of the output folder on girder.',
                paramType='query', dataType='string', required='True'))
     def run_albany_from_girder_folder(self, params):
+        """Run albany on a folder that is on girder.
+
+        Will store the output in the specified output folder.
+        """
         inputFolderId = params.get('inputFolderId')
         outputFolderId = params.get('outputFolderId')
         filename = 'input.yaml'

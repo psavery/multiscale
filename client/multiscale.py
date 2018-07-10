@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+"""
+Multiscale client.
+
+This is a client tool to submit, check status, and clean up
+multiscale modeling jobs that are to run on a girder server.
+
+See --help for options.
+"""
+
 import os
 import sys
 
@@ -22,6 +31,13 @@ supportedCalculations = [
 
 
 def getClient(apiKey):
+    """Get an authenticated GirderClient object.
+
+    Takes an apiKey and returns an authenticated
+    girder_client.GirderClient object. apiKey may be empty or set to
+    "None" if the environmental variable "MULTISCALE_API_KEY" is to
+    be used instead.
+    """
     if not apiKey:
         apiKey = os.getenv('MULTISCALE_API_KEY')
         if not apiKey:
@@ -43,6 +59,7 @@ def getClient(apiKey):
 
 
 def submitFunc(gc, args):
+    """Submit a multiscale calculation."""
     calcType = args.calculation_type.lower()
     inputDir = args.input_dir
 
@@ -53,6 +70,7 @@ def submitFunc(gc, args):
 
 
 def statusFunc(gc, args):
+    """Get the status of a multiscale job."""
     jobId = args.job_id
     ju = JobUtils(gc)
     statusStr = ju.jobStatus(jobId)
@@ -65,6 +83,7 @@ def statusFunc(gc, args):
 
 
 def listFunc(gc, args):
+    """List all jobs for the current user."""
     uu = UserUtils(gc)
     userId = uu.getCurrentUserId()
 
@@ -83,6 +102,7 @@ def listFunc(gc, args):
 
 
 def logFunc(gc, args):
+    """Display the job log for a given job id."""
     jobId = args.job_id
     ju = JobUtils(gc)
     log = ju.getJobLog(jobId)
@@ -91,6 +111,7 @@ def logFunc(gc, args):
 
 
 def downloadFunc(gc, args):
+    """Download the input or output of a specified job."""
     jobId = args.job_id
     download_input = args.download_input
 
@@ -108,12 +129,14 @@ def downloadFunc(gc, args):
 
 
 def cancelFunc(gc, args):
+    """Cancel a running or inactive job."""
     jobId = args.job_id
     ju = JobUtils(gc)
     ju.cancelJob(jobId)
 
 
 def deleteFunc(gc, args):
+    """Delete a job and all of its input and output."""
     jobId = args.job_id
     ju = JobUtils(gc)
 
@@ -149,6 +172,11 @@ def deleteFunc(gc, args):
 
 
 def cleanFunc(gc, args):
+    """Delete all jobs that are not inactive, queued, or running.
+
+    This will also delete all input and output for each job that
+    is deleted.
+    """
     uu = UserUtils(gc)
     userId = uu.getCurrentUserId()
 

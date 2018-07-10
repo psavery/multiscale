@@ -1,3 +1,5 @@
+"""Query the user with a yes/no question."""
+
 import sys
 
 

@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+"""Job utility functions for communicating with girder."""
 
 from girder_client import HttpError
 
 
 class JobUtils:
+    """Utility functions for performing job operations on girder."""
 
     JOB_LIST_PATH = '/job'
     JOB_ID_PATH = '/job/{id}'
@@ -25,16 +26,19 @@ class JobUtils:
     }
 
     def __init__(self, gc):
+        """Initialize with an authenticated GirderClient object."""
         self.gc = gc
 
     @staticmethod
     def getJobStatusStr(status):
+        """Get a job status string from a status id number."""
         if not isinstance(status, int):
             return ''
 
         return JobUtils.JOB_STATUS.get(status, '')
 
     def jobStatus(self, jobId):
+        """Get a job status string from a job id number."""
         params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
@@ -53,6 +57,10 @@ class JobUtils:
         return statusStr
 
     def getAllJobsForUser(self, userId):
+        """Get all jobs for a specified user id.
+
+        Returns a dictionary of jobIds to status strings.
+        """
         params = {
             'userId': userId,
             'limit': 1000000
@@ -77,6 +85,7 @@ class JobUtils:
         return output
 
     def getJobLog(self, jobId):
+        """Get the log for a given jobId."""
         params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
@@ -93,6 +102,7 @@ class JobUtils:
         return log
 
     def cancelJob(self, jobId):
+        """Cancel a job given its jobId."""
         params = {'id': jobId}
         try:
             return self.gc.put(JobUtils.JOB_CANCEL_PATH, parameters=params)
@@ -103,6 +113,7 @@ class JobUtils:
             raise
 
     def deleteJob(self, jobId):
+        """Delete a job given its jobId."""
         params = {'id': jobId}
         try:
             return self.gc.delete(JobUtils.JOB_ID_PATH, parameters=params)

@@ -1,12 +1,23 @@
+"""Albany Calculation.
+
+On the girder server, run an Albany calculation with a given
+Albany input.
+"""
+
+from utilities.multiscale_utils import MultiscaleUtils
 
 # Because we need the utilities folder...
 import sys
 sys.path.append('..')
 
-from utilities.multiscale_utils import MultiscaleUtils
-
 
 def submitAlbanyCalculation(gc, inputDir):
+    """Submit an albany calculation on the girder server.
+
+    gc should be an authenticated GirderClient object.
+    inputDir is a local input directory that will be uploaded to
+    the girder server.
+    """
     mu = MultiscaleUtils(gc)
 
     baseFolderName = MultiscaleUtils.BASE_FOLDER_NAME
