@@ -6,6 +6,7 @@ from .folder_utils import FolderUtils
 from .job_utils import JobUtils
 from .user_utils import UserUtils
 
+
 class MultiscaleUtils:
 
     RUN_ALBANY_PATH = '/multiscale/run_albany_from_girder_folder'
@@ -16,7 +17,6 @@ class MultiscaleUtils:
     def __init__(self, gc):
         self.gc = gc
 
-
     def getBaseFolder(self):
         uu = UserUtils(self.gc)
         userId = uu.getCurrentUserId()
@@ -25,7 +25,6 @@ class MultiscaleUtils:
             description='Data for multiscale calculations',
             parentType='user', reuseExisting=True,
             public=False)
-
 
     def createNewJobFolder(self):
         baseFolder = self.getBaseFolder()
@@ -50,9 +49,8 @@ class MultiscaleUtils:
 
         return self.gc.createFolder(baseFolderId, workingDirName)
 
-
     def isMultiscaleJob(self, jobId):
-        params = { "id" : jobId }
+        params = {"id": jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
@@ -74,10 +72,10 @@ class MultiscaleUtils:
 
         return True
 
-
     # folderType must be 'input' or 'output'
+
     def getInputOrOutputFolderId(self, jobId, folderType):
-        params = { "id" : jobId }
+        params = {"id": jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
         except HttpError as e:
@@ -115,14 +113,11 @@ class MultiscaleUtils:
 
         return multiscale_settings[folderIdName]
 
-
     def getInputFolderId(self, jobId):
         return self.getInputOrOutputFolderId(jobId, "input")
 
-
     def getOutputFolderId(self, jobId):
         return self.getInputOrOutputFolderId(jobId, "output")
-
 
     def getJobFolderId(self, jobId):
         outputFolderId = self.getOutputFolderId(jobId)
@@ -145,16 +140,13 @@ class MultiscaleUtils:
 
         return parentId
 
-
     def getInputFolder(self, jobId):
         inputFolderId = self.getInputFolderId(jobId)
         return self.gc.getFolder(inputFolderId)
 
-
     def getOutputFolder(self, jobId):
         outputFolderId = self.getOutputFolderId(jobId)
         return self.gc.getFolder(outputFolderId)
-
 
     def downloadJobInput(self, jobId):
 
@@ -167,7 +159,6 @@ class MultiscaleUtils:
 
         print('Downloaded input to:', folderName)
 
-
     def downloadJobOutput(self, jobId):
 
         outputFolder = self.getOutputFolder(jobId)
@@ -179,10 +170,9 @@ class MultiscaleUtils:
 
         print('Downloaded output to:', folderName)
 
-
     def runAlbanyJob(self, inputFolderId, outputFolderId):
         params = {
-            "inputFolderId" : inputFolderId,
-            "outputFolderId" : outputFolderId
+            "inputFolderId": inputFolderId,
+            "outputFolderId": outputFolderId
         }
         return self.gc.post(MultiscaleUtils.RUN_ALBANY_PATH, parameters=params)

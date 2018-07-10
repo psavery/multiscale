@@ -20,6 +20,7 @@ supportedCalculations = [
     "albany"
 ]
 
+
 def getClient(apiKey):
     if not apiKey:
         apiKey = os.getenv('MULTISCALE_API_KEY')
@@ -91,23 +92,19 @@ def logFunc(gc, args):
 
 def downloadFunc(gc, args):
     jobId = args.job_id
-    download_type = args.input_or_output.lower()
+    download_input = args.download_input
 
     mu = MultiscaleUtils(gc)
 
-    if download_type == 'input':
+    if download_input:
         mu.downloadJobInput(jobId)
-    elif download_type == 'output':
+    else:
         ju = JobUtils(gc)
         statusStr = ju.jobStatus(jobId)
         if statusStr != 'SUCCESS':
             print('Warning: job status is not "SUCCESS". The output may '
                   'be missing or invalid')
         mu.downloadJobOutput(jobId)
-    else:
-        print('Error: download type must be "input" or "output"')
-        return
-
 
 
 def cancelFunc(gc, args):
@@ -230,7 +227,9 @@ if __name__ == '__main__':
                                                 'for a given multiscale '
                                                 'job id.'))
     download.add_argument('job_id', help='The job id')
-    download.add_argument('input_or_output', help="Either 'input' or 'output'")
+    download.add_argument('-i', '--download-input', action='store_true',
+                          help=("Instead of downloading the output for this "
+                                "job, download the input."))
     download.set_defaults(func=downloadFunc)
 
     cancel = sub.add_parser('cancel', help='Cancel a job for a given job id.')

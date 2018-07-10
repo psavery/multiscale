@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class UserUtils:
 
     ME_PATH = '/user/me'

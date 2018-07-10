@@ -5,6 +5,7 @@ sys.path.append("..")
 
 from utilities.multiscale_utils import MultiscaleUtils
 
+
 def submitAlbanyCalculation(gc, inputDir):
     mu = MultiscaleUtils(gc)
 

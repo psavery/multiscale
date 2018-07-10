@@ -61,7 +61,7 @@ class MultiscaleEndpoints(Resource):
         filename = 'input.yaml'
         folder_name = 'workingDir'
         volume = GirderFolderIdToVolume(inputFolderId,
-            volume=TemporaryVolume.default, folder_name=folder_name)
+                                        volume=TemporaryVolume.default, folder_name=folder_name)
         outputDir = inputFolderId + '/' + folder_name + '/output.exo'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
@@ -74,12 +74,12 @@ class MultiscaleEndpoints(Resource):
 
         # We want to update the job with some multiscale settings.
         # We will put it in the meta data.
-        job = Job().findOne( { '_id' : result.job['_id'] } )
+        job = Job().findOne({'_id': result.job['_id']})
         multiscale_io = {
-            'meta' : {
-                'multiscale_settings' : {
-                    'inputFolderId' : inputFolderId,
-                    'outputFolderId' : outputFolderId
+            'meta': {
+                'multiscale_settings': {
+                    'inputFolderId': inputFolderId,
+                    'outputFolderId': outputFolderId
                 }
             }
         }
