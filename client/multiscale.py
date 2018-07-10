@@ -117,7 +117,7 @@ def deleteFunc(gc, args):
     mu = MultiscaleUtils(gc)
     fu = FolderUtils(gc)
     if mu.isMultiscaleJob(jobId):
-        folderId = mu.getOutputFolderId(jobId)
+        folderId = mu.getJobFolderId(jobId)
         folderPath = fu.getFullFolderPath(folderId)
         question = ('This will permanently delete the output folder for this '
                     'job and all of its contents.\nThe output folder is: ' +
@@ -173,7 +173,7 @@ def cleanFunc(gc, args):
         else:
             folderId = None
             if mu.isMultiscaleJob(jobId):
-                folderId = mu.getOutputFolderId(jobId)
+                folderId = mu.getJobFolderId(jobId)
 
             ju.deleteJob(jobId)
 

@@ -2,6 +2,7 @@
 
 from girder_client import HttpError
 
+from .folder_utils import FolderUtils
 from .job_utils import JobUtils
 from .user_utils import UserUtils
 
@@ -103,6 +104,28 @@ class MultiscaleUtils:
             return
 
         return multiscale_settings['outputFolderId']
+
+
+    def getJobFolderId(self, jobId):
+        outputFolderId = self.getOutputFolderId(jobId)
+
+        fu = FolderUtils(self.gc)
+        folder = fu.getFolder(outputFolderId)
+
+        parentId = folder['parentId']
+        parentType = folder['parentCollection']
+
+        # If the parent is not a folder, do not return it
+        if parentType != 'folder':
+            return outputFolderId
+
+        parentFolder = fu.getFolder(parentId)
+        parentName = parentFolder['name']
+        # Double check and make sure the parent name starts with 'job_'
+        if not parentName.startswith('job_'):
+            return outputFolderId
+
+        return parentId
 
 
     def getOutputFolder(self, jobId):
