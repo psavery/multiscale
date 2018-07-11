@@ -23,28 +23,33 @@ from utilities.multiscale_utils import MultiscaleUtils
 from utilities.user_utils import UserUtils
 from utilities.query_yes_no import query_yes_no
 
-API_URL = 'http://localhost:8080/api/v1'
+DEFAULT_API_URL = 'http://localhost:8080/api/v1'
 
 supportedCalculations = [
     'albany'
 ]
 
 
-def getClient(apiKey):
+def getClient(apiUrl, apiKey):
     """Get an authenticated GirderClient object.
 
-    Takes an apiKey and returns an authenticated
+    Takes an apiUrl and an apiKey and returns an authenticated
     girder_client.GirderClient object. apiKey may be empty or set to
     "None" if the environmental variable "MULTISCALE_API_KEY" is to
     be used instead.
+
+    If apiUrl is empty, the localhost default will be used.
     """
+    if not apiUrl:
+        apiUrl = DEFAULT_API_URL
+
     if not apiKey:
         apiKey = os.getenv('MULTISCALE_API_KEY')
         if not apiKey:
             sys.exit('An api key is required to run this script. '
                      'See --help for more info')
 
-    gc = girder_client.GirderClient(apiUrl=API_URL)
+    gc = girder_client.GirderClient(apiUrl=apiUrl)
 
     try:
         gc.authenticate(apiKey=apiKey)
@@ -225,6 +230,11 @@ if __name__ == '__main__':
                              'Alternatively, the environment variable '
                              '"MULTISCALE_API_KEY" may be set instead.')
 
+    parser.add_argument('-u', '--api-url',
+                        help='The api url for the girder server. '
+                             'The default is the local host. '
+                             'Note: the url normally ends in /api/v1')
+
     sub = parser.add_subparsers()
     submit = sub.add_parser('submit', help=('Submit a multiscale job along '
                                             'with its input folder.'))
@@ -285,7 +295,8 @@ if __name__ == '__main__':
         sys.exit()
 
     apiKey = args.api_key
-    gc = getClient(apiKey)
+    apiUrl = args.api_url
+    gc = getClient(apiUrl, apiKey)
 
     if not gc:
         sys.exit()
