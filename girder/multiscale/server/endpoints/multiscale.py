@@ -17,7 +17,7 @@ from girder_worker.docker.transforms.girder import (
 
 from girder.plugins.jobs.models.job import Job
 
-ALBANY_IMAGE = 'psavery/albany'
+ALBANY_IMAGE = 'openchemistry/albany'
 
 
 class MultiscaleEndpoints(Resource):
