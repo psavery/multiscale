@@ -1,5 +1,6 @@
 The following script provides most of the setup for installing girder, girder\_worker, and the multiscale plugin on Ubuntu 16.04.
 
+```
 ################
 # Begin Script #
 ################
@@ -69,7 +70,7 @@ popd
 #################
 # End of Script #
 #################
-
+```
 
 ##### Set up girder further via the web interface #####
 
