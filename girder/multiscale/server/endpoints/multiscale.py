@@ -26,30 +26,8 @@ class MultiscaleEndpoints(Resource):
     def __init__(self):
         """Initialize the various routes."""
         super(MultiscaleEndpoints, self).__init__()
-        self.route('POST', ('run_albany_local', ),
-                   self.run_albany_local)
-        self.route('POST', ('run_albany_from_girder_folder', ),
-                   self.run_albany_from_girder_folder)
-
-    @access.token
-    @filtermodel(model=Job)
-    @autoDescribeRoute(
-        Description('Run Albany on an input.yaml file already on the server')
-        .param('workingDir', 'The path to the Albany working directory. '
-               '"input.yaml" must be inside.',
-               paramType='query', dataType='string', required='True'))
-    def run_albany_local(self, params):
-        """Run albany on an input.yaml file already on the server."""
-        workingDir = params.get('workingDir')
-        filename = 'input.yaml'
-        mount_dir = '/mnt/test'
-        vol = BindMountVolume(workingDir, mount_dir)
-        result = docker_run.delay(
-            ALBANY_IMAGE, pull_image=False, container_args=[filename],
-            entrypoint='/usr/local/albany/bin/AlbanyT', remove_container=True,
-            volumes=[vol], working_dir=mount_dir)
-
-        return result.job
+        self.route('POST', ('run_albany', ),
+                   self.run_albany)
 
     @access.token
     @filtermodel(model=Job)
@@ -62,7 +40,7 @@ class MultiscaleEndpoints(Resource):
                paramType='query', dataType='string', required='True')
         .param('outputFolderId', 'The id of the output folder on girder.',
                paramType='query', dataType='string', required='True'))
-    def run_albany_from_girder_folder(self, params):
+    def run_albany(self, params):
         """Run albany on a folder that is on girder.
 
         Will store the output in the specified output folder.

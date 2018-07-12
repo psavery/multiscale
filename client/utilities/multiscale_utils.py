@@ -10,7 +10,7 @@ from .user_utils import UserUtils
 class MultiscaleUtils:
     """Utility functions for performing multiscale operations on girder."""
 
-    RUN_ALBANY_PATH = '/multiscale/run_albany_from_girder_folder'
+    RUN_ALBANY_PATH = '/multiscale/run_albany'
 
     BASE_FOLDER_NAME = 'multiscale_data'
     MAX_JOBS = 10000
