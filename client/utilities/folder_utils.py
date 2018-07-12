@@ -1,5 +1,6 @@
 """Folder utility functions for communicating with girder."""
 
+import os
 
 class FolderUtils:
     """Utility functions for performing folder operations on girder."""
@@ -43,3 +44,20 @@ class FolderUtils:
         """Delete a folder given its folderId."""
         params = {'id': folderId}
         self.gc.delete(FolderUtils.FOLDER_DELETE_PATH, parameters=params)
+
+    @staticmethod
+    def getUniqueLocalFolderName(folder):
+        """Get a unique local folder name with 'folder' as the base.
+
+        If 'folder' does not exist, this method returns 'folder'.
+        If 'folder' does exist, it will try 'folder'_1, then 'folder'_2,
+        etc., and it will return the first folder that does not already
+        exist on the local file system.
+        """
+        baseName = folder
+        counter = 1
+        while os.path.isdir(folder) or os.path.isfile(folder):
+            folder = baseName + '_' + str(counter)
+            counter += 1
+
+        return folder

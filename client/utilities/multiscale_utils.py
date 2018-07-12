@@ -178,9 +178,12 @@ class MultiscaleUtils:
         folderId = inputFolder.get('_id', 'id_unknown')
         folderName = inputFolder.get('name', 'name_unknown')
 
-        self.gc.downloadFolderRecursive(folderId, folderName)
+        # Let's make sure we have a unique download name
+        folderName = FolderUtils.getUniqueLocalFolderName(folderName)
 
-        print('Downloaded input to:', folderName)
+        print('Downloading input to:', folderName)
+
+        self.gc.downloadFolderRecursive(folderId, folderName)
 
     def downloadJobOutput(self, jobId):
         """Download the job output folder for a specified job id."""
@@ -189,9 +192,12 @@ class MultiscaleUtils:
         folderId = outputFolder.get('_id', 'id_unknown')
         folderName = outputFolder.get('name', 'name_unknown')
 
-        self.gc.downloadFolderRecursive(folderId, folderName)
+        # Let's make sure we have a unique download name
+        folderName = FolderUtils.getUniqueLocalFolderName(folderName)
 
-        print('Downloaded output to:', folderName)
+        print('Downloading output to:', folderName)
+
+        self.gc.downloadFolderRecursive(folderId, folderName)
 
     def runAlbanyJob(self, inputFolderId, outputFolderId):
         """Run an albany job on the girder server.
