@@ -18,6 +18,7 @@ from girder_client import HttpError
 from calculations.albany import submitAlbanyCalculation
 
 from utilities.folder_utils import FolderUtils
+from utilities.progress_bar import progress_bar
 from utilities.job_utils import JobUtils
 from utilities.multiscale_utils import MultiscaleUtils
 from utilities.user_utils import UserUtils
@@ -54,7 +55,10 @@ def getClient(apiUrl, apiKey):
             sys.exit('An api key is required to run this script. '
                      'See --help for more info')
 
-    gc = girder_client.GirderClient(apiUrl=apiUrl)
+    progress_bar.reportProgress = sys.stdout.isatty()
+
+    gc = girder_client.GirderClient(apiUrl=apiUrl,
+                                    progressReporterCls=progress_bar)
 
     try:
         gc.authenticate(apiKey=apiKey)
