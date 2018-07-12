@@ -108,11 +108,12 @@ def listFunc(gc, args):
         print('No jobs found')
         return
 
-    print('=' * 40)
-    print('{:30s} {:8s}'.format('jobId', 'status'))
-    print('=' * 40)
+    print('=' * 59)
+    print('{:30s} {:12s} {:15s}'.format('jobId', 'status', 'run time (wall)'))
+    print('=' * 59)
     for jobId in jobList.keys():
-        print('{:30s} {:8s}'.format(jobId, jobList[jobId]))
+        print('{:30s} {:12s} {:15s}'.format(jobId, jobList[jobId],
+                                           ju.getWallTime(jobId)))
 
 
 def logFunc(gc, args):

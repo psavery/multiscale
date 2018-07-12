@@ -2,6 +2,7 @@
 
 from girder_client import HttpError
 
+from datetime import datetime, timezone
 
 class JobUtils:
     """Utility functions for performing job operations on girder."""
@@ -122,3 +123,56 @@ class JobUtils:
                 print('Error. invalid job id:', jobId)
                 return {}
             raise
+
+    @staticmethod
+    def isoStrToDatetime(isoStr):
+        """Convenience method to convert iso string to datetime.
+
+        Unfortunately, python does not currently have an easy way to
+        do this. A datetime.fromisoformat was added in python 3.7, but
+        we do not require that version of python yet.
+
+        See this issue:
+        https://stackoverflow.com/questions/28331512/how-to-convert-python-isoformat-string-back-into-datetime-object
+        """
+        split = isoStr.rsplit(':', 1);
+        modifiedStr = split[0] + split[1]
+        return datetime.strptime(modifiedStr, '%Y-%m-%dT%H:%M:%S.%f%z')
+
+    def getWallTime(self, jobId):
+        """Get the total elapsed wall time (seconds) since the job started."""
+        params = {'id': jobId}
+        try:
+            resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
+        except HttpError as e:
+            if e.status == 400:
+                print('Error. invalid job id:', jobId)
+                return {}
+            raise
+
+        if not resp:
+            return ''
+
+        timestamps = resp.get('timestamps', None)
+        if not timestamps:
+            return ''
+
+        startTime = None
+        endTime = None
+
+        for stamp in timestamps:
+            status = stamp.get('status', -1)
+            if not startTime and JobUtils.getJobStatusStr(status) == 'RUNNING':
+                startTime = JobUtils.isoStrToDatetime(stamp.get('time', ''))
+                continue
+            if startTime and JobUtils.getJobStatusStr(status) != 'RUNNING':
+                endTime = JobUtils.isoStrToDatetime(stamp.get('time', ''))
+                break
+
+        if not startTime:
+            return ''
+
+        if not endTime:
+            endTime = datetime.now(timezone.utc)
+
+        return str(endTime - startTime)
