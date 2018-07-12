@@ -1,13 +1,70 @@
-The following script provides most of the setup for installing girder, girder\_worker, and the multiscale plugin on Ubuntu 16.04.
+# Multiscale Setup
+- [Multiscale Client Setup](#multiscale-client-setup)
+- [Multiscale Server Setup](#multiscale-server-setup)
 
-```
+# Multiscale Client Setup
+## Obtain the Multiscale Client
+Dependencies:
+ - python3
+ - girder-client
+
+The multiscale client is located in the same repository as the multiscale server. You can obtain it via:
+
+`git clone https://github.com/psavery/multiscale`
+
+The client is `multiscale.py` located in the `client` directory.
+
+The primary dependency for the multiscale client is the girder client. You can obtain the girder client
+by either installing it [from the repository](https://github.com/girder/girder/tree/master/clients/python) with 
+`pip install -e .`, or by simply using `pip install girder-client`. Make sure you are using python3.
+
+## Setup an API Key
+In order to use the multiscale client, you need an api key for the server.
+
+Using a web browser, open the web page that the server is on, log in, click your user name in the top right corner, and
+then click "My account". Click on "API Keys"->"Create new key". Enter whatever you would like, but the key needs read
+and write access to your private files. Then click "show" to see the key.
+
+Before running the multiscale client, set an environment variable named `MULTISCALE_API_KEY`, and set its value to the
+value of the key.
+
+## Run the Multiscale Client
+Before running the multiscale client, sure your api key is set up properly 
+(see [Setup an API Key](#setup-an-api-key) above).
+You may also wish to set an environment variable for the api url with the environment variable `MULTISCALE_API_URL`
+(the alternative is to specify the api url with the `-u` flag every time you run the client).
+
+The primary dependency for the multiscale client is the girder client. Make sure your python3 environment has access to 
+the girder client.
+
+The client is called `multiscale.py`, and it is located in the "client" directory of the 
+[multiscale repository](https://github.com/psavery/multiscale).
+
+You can get a sample albany input directory from [here](https://github.com/psavery/multiscale/releases/tag/albany_sample1).
+
+Simply unzip it and run `./multiscale.py submit albany albany_sample1` for a test. It will upload the data onto the girder
+server in a private folder in the root called 'multiscale\_data', and it should begin the albany calculation. You can check
+the status of the job with `./multiscale.py list`, and you can check the albany log with `./multiscale.py log`. When the
+status is `SUCCESS`, you can download the output with `./multiscale.py download` (you could also download the input if you
+used the `-i` flag after the `download` argument).
+
+See `multiscale.py --help` for more info, or `multiscale.py <command> --help` for more info about a specific command.
+
+# Multiscale Server Setup
+
+The following script provides most of the setup for installing girder, girder\_worker, and the multiscale plugin on 
+Ubuntu 16.04.
+
+```bash
 ################
 # Begin Script #
 ################
 
 # Install system deps
 sudo apt update
-sudo apt install -y git python3-dev virtualenv gcc curl libffi-dev libjpeg-dev libldap2-dev libsasl2-dev libssl-dev make zlib1g-dev software-properties-common
+sudo apt install -y git python3-dev virtualenv gcc curl \
+  libffi-dev libjpeg-dev libldap2-dev libsasl2-dev libssl-dev \
+  make zlib1g-dev software-properties-common
 
 # Install the latest nodejs
 curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
@@ -72,50 +129,35 @@ popd
 #################
 ```
 
-##### Set up girder further via the web interface #####
+## Set Up Girder Further via the Web Interface
 
-Once this is all set up, you may start the girder server by activating the virtual environment (`source /multiscale_server/multiscale_env/bin/activate`) and running `girder-server` (you can change the host ip and port number with the `-H` and `-p` flags, respectively).
+Once this is all set up, you may start the girder server by activating the virtual environment
+(`source /multiscale_server/multiscale_env/bin/activate`) and running `girder-server` (you can change the host ip and
+port number with the `-H` and `-p` flags, respectively).
 
-Connect to your girder server with your web browser. If you are running the server locally, then you may just need to go to http://localhost:8080
+Connect to your girder server with your web browser. If you are running the server locally, then you may just need to go
+to http://localhost:8080
 
 Create an account. The first account is an administrator account.
 
 Go to AdminConsole-\>Assetstores and add an asset store. You can just add one to the local file system if you would like.
 
-Go to AdminConsole-\>Plugins and enable the "Multiscale Modeling" plugin. This should automatically enable the "Jobs" and "Remove Worker" plugins.
+Go to AdminConsole-\>Plugins and enable the "Multiscale Modeling" plugin. This should automatically enable the "Jobs"
+and "Remove Worker" plugins.
 
 You need to restart the girder server for these changes to take effect.
 
-(Note: after enabling jobs, you may optionally run `girder-install web` again in order to build the web interface for the jobs plugin, which is convenient for tracking and canceling jobs).
+(Note: after enabling jobs, you may optionally run `girder-install web` again in order to build the web interface for
+the jobs plugin, which is convenient for tracking and canceling jobs).
 
-If you wish to start the girder-server as a background process, you may wish to set a log file in the girder configuration. See the girder docs for more details.
-
-
-##### Set up api key #####
-In order to use the multiscale client, you need an api key for this server.
-
-Open the girder web page in your browser, click on your user name in the top right corner, and then click "My account". Click on "API Keys"->"Create new key". Enter whatever you would like, but the key needs read and write access to your private files. Then click "show" to see the key.
-
-Before running the multiscale client, set an environment variable named `MULTISCALE_API_KEY`, and set its value to the value of the key.
+If you wish to start the girder-server as a background process, you may wish to set a log file in the girder
+configuration. See the girder docs for more details.
 
 
-##### Start girder\_worker #####
-You may also start the girder worker by activating the virtual environment (`source /multiscale_server/multiscale_env/bin/activate`) and running `girder-worker`.
+## Start girder\_worker
+You may also start the girder worker by activating the virtual environment
+(`source /multiscale_server/multiscale_env/bin/activate`) and running `girder-worker`.
 
 There are various settings you can change such as limiting the number of processes, time limits, log files, etc.
 
-
-##### Run multiscale client #####
-Make sure your api key is set up properly (see "Set up api key" above).
-
-You may also wish to set an environment variable for the api url with `MULTISCALE_API_URL`.
-
-The primary dependency is the girder client. Make sure your python environment has access to the girder client (it will if you use the virtual environment set up above).
-
-The client is called `multiscale.py`, and it is located in the "client" directory of https://github.com/psavery/multiscale
-
-You can get a sample albany input directory from here:  https://github.com/psavery/multiscale/releases/tag/albany\_sample1
-
-Simply unzip it and run `multiscale.py submit albany albany_sample1` for a test. It will place the data on the girder server in a private folder in the root called 'multiscale\_data'.
-
-See `multiscale.py --help` for more info, or `multiscale.py <command> --help` for more info about a specific command.
+Both girder and girder_worker need to be running on the server in order to use the multiscale client.
