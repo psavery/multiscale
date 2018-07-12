@@ -10,7 +10,7 @@ sudo apt update
 sudo apt install -y git python3-dev virtualenv gcc curl libffi-dev libjpeg-dev libldap2-dev libsasl2-dev libssl-dev make zlib1g-dev software-properties-common
 
 # Install the latest nodejs
-curl -sL https://deb.nodesource.com/setup\_10.x | sudo bash -
+curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
 sudo apt install -y nodejs
 # Update npm
 sudo npm install -g npm
@@ -27,19 +27,19 @@ sudo service rabbitmq-server start  # may be unnecessary if ubuntu starts it for
 
 # Install docker and pull the albany image
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb\_release -cs) stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt update
 sudo apt install -y docker-ce
 sudo docker pull openchemistry/albany
 
 # Set up the multiscale server
-mkdir multiscale\_server
-cd multiscale\_server
-virtualenv -p /usr/bin/python3 multiscale\_env
-source multiscale\_env/bin/activate
+mkdir multiscale_server
+cd multiscale_server
+virtualenv -p /usr/bin/python3 multiscale_env
+source multiscale_env/bin/activate
 
 git clone https://github.com/girder/girder
-git clone https://github.com/girder/girder\_worker
+git clone https://github.com/girder/girder_worker
 git clone https://github.com/psavery/multiscale
 
 # Add our plugin to the girder plugins
@@ -51,14 +51,14 @@ cd girder
 pip install -e .
 popd
 
-# Install girder\_worker
+# Install girder_worker
 pushd .
-cd girder\_worker
+cd girder_worker
 pip install -e .
 popd
 
 # Prevent some strange click errors
-export LC\_ALL=C.UTF-8
+export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 # Install web stuff for girder
