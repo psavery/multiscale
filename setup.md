@@ -15,7 +15,7 @@ The multiscale client is located in the same repository as the multiscale server
 The client is `multiscale.py` located in the `client` directory.
 
 The primary dependency for the multiscale client is the girder client. You can obtain the girder client
-by either installing it [from the repository](https://github.com/girder/girder/tree/master/clients/python) with 
+by either installing it [from the repository](https://github.com/girder/girder/tree/master/clients/python) with
 `pip install -e .`, or by simply using `pip install girder-client`. Make sure you are using python3.
 
 ## Setup an API Key
@@ -29,30 +29,30 @@ Before running the multiscale client, set an environment variable named `MULTISC
 value of the key.
 
 ## Run the Multiscale Client
-Before running the multiscale client, sure your api key is set up properly 
+Before running the multiscale client, sure your api key is set up properly
 (see [Setup an API Key](#setup-an-api-key) above).
 You may also wish to set an environment variable for the api url with the environment variable `MULTISCALE_API_URL`
 (the alternative is to specify the api url with the `-u` flag every time you run the client).
 
-The primary dependency for the multiscale client is the girder client. Make sure your python3 environment has access to 
+The primary dependency for the multiscale client is the girder client. Make sure your python3 environment has access to
 the girder client.
 
-The client is called `multiscale.py`, and it is located in the "client" directory of the 
+The client is called `multiscale.py`, and it is located in the "client" directory of the
 [multiscale repository](https://github.com/psavery/multiscale).
 
-You can get a sample albany input directory from [here](https://github.com/psavery/multiscale/releases/tag/albany_sample1).
+You can find sample input directories [here](https://github.com/psavery/multiscale/releases/tag/samples).
 
-Simply unzip it and run `./multiscale.py submit albany albany_sample1` for a test. It will upload the data onto the girder
-server in a private folder in the root called 'multiscale\_data', and it should begin the albany calculation. You can check
-the status of the job with `./multiscale.py list`, and you can check the albany log with `./multiscale.py log`. When the
-status is `SUCCESS`, you can download the output with `./multiscale.py download` (you could also download the input if you
+Simply unzip one of them and run `./multiscale.py submit <command> <unzipped_sample>` for a test. It will upload the data onto the girder
+server in a private folder in the root called 'multiscale\_data', and the server should begin the simulation. You can check
+the status of the job with `./multiscale.py list`, and you can check the log with `./multiscale.py log`. When the
+status is `SUCCESS`, you can download the output with `./multiscale.py download <jobId>` (you could also download the input if you
 used the `-i` flag after the `download` argument).
 
 See `multiscale.py --help` for more info, or `multiscale.py <command> --help` for more info about a specific command.
 
 # Multiscale Server Setup
 
-The following script provides most of the setup for installing girder, girder\_worker, and the multiscale plugin on 
+The following script provides most of the setup for installing girder, girder\_worker, and the multiscale plugin on
 Ubuntu 16.04.
 
 ```bash
