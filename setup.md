@@ -160,4 +160,4 @@ You may also start the girder worker by activating the virtual environment
 
 There are various settings you can change such as limiting the number of processes, time limits, log files, etc.
 
-Both girder and girder_worker need to be running on the server in order to use the multiscale client.
+Both `girder-server` and `girder-worker` need to be running on the server in order to use the multiscale client.
