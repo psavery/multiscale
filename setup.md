@@ -74,7 +74,7 @@ popd
 
 ##### Set up girder further via the web interface #####
 
-Once this is all set up, you may start the girder server by activating the virtual environment (source /multiscale\_server/multiscale\_env/bin/activate) and running 'girder-server' (you can change the host ip and port number with the -H and -p flags, respectively).
+Once this is all set up, you may start the girder server by activating the virtual environment (`source /multiscale_server/multiscale_env/bin/activate`) and running `girder-server` (you can change the host ip and port number with the `-H` and `-p` flags, respectively).
 
 Connect to your girder server with your web browser. If you are running the server locally, then you may just need to go to http://localhost:8080
 
@@ -86,7 +86,7 @@ Go to AdminConsole-\>Plugins and enable the "Multiscale Modeling" plugin. This s
 
 You need to restart the girder server for these changes to take effect.
 
-(Note: after enabling jobs, you may optionally run 'girder-install web' again in order to build the web interface for the jobs plugin, which is convenient for tracking and canceling jobs).
+(Note: after enabling jobs, you may optionally run `girder-install web` again in order to build the web interface for the jobs plugin, which is convenient for tracking and canceling jobs).
 
 If you wish to start the girder-server as a background process, you may wish to set a log file in the girder configuration. See the girder docs for more details.
 
@@ -96,11 +96,11 @@ In order to use the multiscale client, you need an api key for this server.
 
 Open the girder web page in your browser, click on your user name in the top right corner, and then click "My account". Click on "API Keys"->"Create new key". Enter whatever you would like, but the key needs read and write access to your private files. Then click "show" to see the key.
 
-Before running the multiscale client, set an environment variable named MULTISCALE\_API\_KEY, and set its value to the value of the key.
+Before running the multiscale client, set an environment variable named `MULTISCALE_API_KEY`, and set its value to the value of the key.
 
 
 ##### Start girder\_worker #####
-You may also start the girder worker by activating the virtual environment (source /multiscale\_server/multiscale\_env/bin/activate) and running 'girder-worker'.
+You may also start the girder worker by activating the virtual environment (`source /multiscale_server/multiscale_env/bin/activate`) and running `girder-worker`.
 
 There are various settings you can change such as limiting the number of processes, time limits, log files, etc.
 
@@ -108,12 +108,14 @@ There are various settings you can change such as limiting the number of process
 ##### Run multiscale client #####
 Make sure your api key is set up properly (see "Set up api key" above).
 
+You may also wish to set an environment variable for the api url with `MULTISCALE_API_URL`.
+
 The primary dependency is the girder client. Make sure your python environment has access to the girder client (it will if you use the virtual environment set up above).
 
-The client is called "multiscale.py", and it is located in the "client" directory of https://github.com/psavery/multiscale
+The client is called `multiscale.py`, and it is located in the "client" directory of https://github.com/psavery/multiscale
 
 You can get a sample albany input directory from here:  https://github.com/psavery/multiscale/releases/tag/albany\_sample1
 
-Simply unzip it and run 'multiscale.py submit albany albany\_sample1' for a test. It will place the data on the girder server in a private folder in the root called 'multiscale\_data'.
+Simply unzip it and run `multiscale.py submit albany albany_sample1` for a test. It will place the data on the girder server in a private folder in the root called 'multiscale\_data'.
 
-See multiscale.py --help for more info, or multiscale.py \<command\> --help for more info about a specific command.
+See `multiscale.py --help` for more info, or `multiscale.py <command> --help` for more info about a specific command.
