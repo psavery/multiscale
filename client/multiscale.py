@@ -34,14 +34,19 @@ def getClient(apiUrl, apiKey):
     """Get an authenticated GirderClient object.
 
     Takes an apiUrl and an apiKey and returns an authenticated
-    girder_client.GirderClient object. apiKey may be empty or set to
-    "None" if the environmental variable "MULTISCALE_API_KEY" is to
-    be used instead.
+    girder_client.GirderClient object.
 
-    If apiUrl is empty, the localhost default will be used.
+    If the apiUrl is empty or set to "None", the environment variable
+    "MULTISCALE_API_URL" will be used. If it is not set, the
+    default http://localhost:8080/api/v1 value will be used instead.
+
+    If the apiKey is empty or set to "None", the environment variable
+    "MULTISCALE_API_KEY" will be used. A valid api key is mandatory.
     """
     if not apiUrl:
-        apiUrl = DEFAULT_API_URL
+        apiUrl = os.getenv('MULTISCALE_API_URL')
+        if not apiUrl:
+            apiUrl = DEFAULT_API_URL
 
     if not apiKey:
         apiKey = os.getenv('MULTISCALE_API_KEY')
