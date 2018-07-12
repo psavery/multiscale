@@ -2,6 +2,7 @@
 
 import os
 
+
 class FolderUtils:
     """Utility functions for performing folder operations on girder."""
 
