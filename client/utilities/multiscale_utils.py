@@ -11,6 +11,7 @@ class MultiscaleUtils:
     """Utility functions for performing multiscale operations on girder."""
 
     RUN_ALBANY_PATH = '/multiscale/run_albany'
+    RUN_SMTK_MESH_PLACEMENT_PATH = '/multiscale/run_smtk_mesh_placement'
 
     BASE_FOLDER_NAME = 'multiscale_data'
     MAX_JOBS = 10000
@@ -213,3 +214,19 @@ class MultiscaleUtils:
             'outputFolderId': outputFolderId
         }
         return self.gc.post(MultiscaleUtils.RUN_ALBANY_PATH, parameters=params)
+
+    def runSmtkMeshPlacementJob(self, inputFolderId, outputFolderId):
+        """Run an smtk mesh placement job on the girder server.
+
+        inputFolderId is the ID of the input folder.
+        outputFolderId is the ID of the output folder.
+
+        After smtk completes, the output will be sent to
+        the outputFolder.
+        """
+        params = {
+            'inputFolderId': inputFolderId,
+            'outputFolderId': outputFolderId
+        }
+        return self.gc.post(MultiscaleUtils.RUN_SMTK_MESH_PLACEMENT_PATH,
+                            parameters=params)

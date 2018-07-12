@@ -16,6 +16,7 @@ import girder_client
 from girder_client import HttpError
 
 from calculations.albany import submitAlbanyCalculation
+from calculations.smtk_mesh_placement import submitSmtkMeshPlacement
 
 from utilities.folder_utils import FolderUtils
 from utilities.progress_bar import progress_bar
@@ -27,7 +28,8 @@ from utilities.query_yes_no import query_yes_no
 DEFAULT_API_URL = 'http://localhost:8080/api/v1'
 
 supportedCalculations = [
-    'albany'
+    'albany',
+    'smtk'
 ]
 
 
@@ -79,6 +81,8 @@ def submitFunc(gc, args):
 
     if calcType == 'albany':
         submitAlbanyCalculation(gc, inputDir)
+    elif calcType == 'smtk':
+        submitSmtkMeshPlacement(gc, inputDir)
     else:
         print('Error: unsupported calculation type:', calcType)
 
