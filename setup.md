@@ -52,6 +52,22 @@ See `multiscale.py --help` for more info, or `multiscale.py <command> --help` fo
 
 # Multiscale Server Setup
 
+The primary dependencies that are needed to get the multiscale server running are as follows:
+- python3
+- mongodb-server
+- rabbitmq-server
+- nodejs
+- docker
+- girder
+- girder-worker
+
+Note that you need to be able to run `docker` without `sudo`.
+
+The necessary docker images are as follows:
+- openchemistry/albany
+- openchemistry/dream3d
+- openchemistry/smtk
+
 The following script provides most of the setup for installing girder, girder\_worker, and the multiscale plugin on
 Ubuntu 16.04.
 
@@ -88,6 +104,8 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt update
 sudo apt install -y docker-ce
 sudo docker pull openchemistry/albany
+sudo docker pull openchemistry/dream3d
+sudo docker pull openchemistry/smtk
 
 # Set up the multiscale server
 mkdir multiscale_server
@@ -128,6 +146,7 @@ popd
 # End of Script #
 #################
 ```
+Note that before starting the server, you need to be able to run `docker` without `sudo`.
 
 ## Set Up Girder Further via the Web Interface
 
