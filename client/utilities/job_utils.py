@@ -4,6 +4,7 @@ from girder_client import HttpError
 
 from datetime import datetime, timezone
 
+
 class JobUtils:
     """Utility functions for performing job operations on girder."""
 
@@ -126,7 +127,7 @@ class JobUtils:
 
     @staticmethod
     def isoStrToDatetime(isoStr):
-        """Convenience method to convert iso string to datetime.
+        """Convert iso string to datetime.
 
         Unfortunately, python does not currently have an easy way to
         do this. A datetime.fromisoformat was added in python 3.7, but
@@ -135,7 +136,7 @@ class JobUtils:
         See this issue:
         https://stackoverflow.com/questions/28331512/how-to-convert-python-isoformat-string-back-into-datetime-object
         """
-        split = isoStr.rsplit(':', 1);
+        split = isoStr.rsplit(':', 1)
         modifiedStr = split[0] + split[1]
         return datetime.strptime(modifiedStr, '%Y-%m-%dT%H:%M:%S.%f%z')
 

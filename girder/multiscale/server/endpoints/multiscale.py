@@ -6,7 +6,6 @@ from girder.api.rest import Resource, filtermodel
 
 from girder_worker.docker.tasks import docker_run
 from girder_worker.docker.transforms import (
-    BindMountVolume,
     TemporaryVolume,
     VolumePath
 )
@@ -157,12 +156,19 @@ class MultiscaleEndpoints(Resource):
         outputDir = inputFolderId + '/' + folder_name + '/'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
-            SMTK_IMAGE, pull_image=False, container_args=["-c", ". ~/setupEnvironment; python /usr/local/afrl-automation/runner.py input.json"],
-            entrypoint='bash', remove_container=True,
+            SMTK_IMAGE,
+            pull_image=False,
+            container_args=[
+                '-c',
+                ('. ~/setupEnvironment; '
+                 'python /usr/local/afrl-automation/runner.py input.json')],
+            entrypoint='bash',
+            remove_container=True,
             working_dir=volume,
             girder_result_hooks=[
-                GirderUploadVolumePathToFolder(volumepath, outputFolderId)
-            ])
+                GirderUploadVolumePathToFolder(
+                    volumepath,
+                    outputFolderId)])
 
         # We want to update the job with some multiscale settings.
         # We will put it in the meta data.
