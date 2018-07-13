@@ -111,7 +111,7 @@ class MultiscaleEndpoints(Resource):
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
             DREAM3D_IMAGE, pull_image=False, container_args=[filename],
-            remove_container=False, working_dir=volume,
+            remove_container=True, working_dir=volume,
             girder_result_hooks=[
                 GirderUploadVolumePathToFolder(volumepath, outputFolderId)
             ])
