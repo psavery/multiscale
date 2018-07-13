@@ -2,8 +2,7 @@
 
 from girder_client import HttpError
 
-from datetime import datetime, timezone
-
+from datetime import datetime, timedelta, timezone
 
 class JobUtils:
     """Utility functions for performing job operations on girder."""
@@ -130,8 +129,10 @@ class JobUtils:
         """Convert iso string to datetime.
 
         Unfortunately, python does not currently have an easy way to
-        do this. A datetime.fromisoformat was added in python 3.7, but
+        do this. datetime.fromisoformat() was added in python 3.7, but
         we do not require that version of python yet.
+
+        We have to remove the last colon since %z does not recognize it.
 
         See this issue:
         https://stackoverflow.com/questions/28331512/how-to-convert-python-isoformat-string-back-into-datetime-object
@@ -141,7 +142,13 @@ class JobUtils:
         return datetime.strptime(modifiedStr, '%Y-%m-%dT%H:%M:%S.%f%z')
 
     def getWallTime(self, jobId):
-        """Get the total elapsed wall time (seconds) since the job started."""
+        """Get the elapsed walltime for which a job has been running.
+
+        If a job is running, it will display the runtime up to now.
+        If a job is completed, it will display the full run time.
+
+        Returns a string with the walltime in H:M:S format.
+        """
         params = {'id': jobId}
         try:
             resp = self.gc.get(JobUtils.JOB_ID_PATH, parameters=params)
@@ -176,4 +183,6 @@ class JobUtils:
         if not endTime:
             endTime = datetime.now(timezone.utc)
 
-        return str(endTime - startTime)
+        td = endTime - startTime
+        # Remove the microseconds before returning
+        return str(timedelta(days=td.days, seconds=td.seconds))
