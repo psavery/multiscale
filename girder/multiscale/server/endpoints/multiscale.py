@@ -17,8 +17,8 @@ from girder_worker.docker.transforms.girder import (
 from girder.plugins.jobs.models.job import Job
 
 ALBANY_IMAGE = 'openchemistry/albany'
-DREAM3D_IMAGE = 'psavery/dream3d'
-SMTK_IMAGE = 'psavery/smtk'
+DREAM3D_IMAGE = 'openchemistry/dream3d'
+SMTK_IMAGE = 'openchemistry/smtk'
 
 
 class MultiscaleEndpoints(Resource):
