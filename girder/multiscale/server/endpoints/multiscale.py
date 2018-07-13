@@ -16,6 +16,8 @@ from girder_worker.docker.transforms.girder import (
 
 from girder.plugins.jobs.models.job import Job
 
+from . import utils
+
 ALBANY_IMAGE = 'openchemistry/albany'
 DREAM3D_IMAGE = 'openchemistry/dream3d'
 SMTK_IMAGE = 'openchemistry/smtk'
@@ -68,19 +70,10 @@ class MultiscaleEndpoints(Resource):
                 GirderUploadVolumePathToFolder(volumepath, outputFolderId)
             ])
 
-        # We want to update the job with some multiscale settings.
-        # We will put it in the meta data.
-        job = Job().findOne({'_id': result.job['_id']})
-        multiscale_io = {
-            'meta': {
-                'multiscale_settings': {
-                    'inputFolderId': inputFolderId,
-                    'outputFolderId': outputFolderId
-                }
-            }
-        }
-
-        return Job().updateJob(job, otherFields=multiscale_io)
+        # Set the multiscale meta data and return the job
+        jobId = result.job['_id']
+        return utils.setMultiscaleMetaData(jobId, inputFolderId,
+                                           outputFolderId)
 
     @access.token
     @filtermodel(model=Job)
@@ -116,19 +109,10 @@ class MultiscaleEndpoints(Resource):
                 GirderUploadVolumePathToFolder(volumepath, outputFolderId)
             ])
 
-        # We want to update the job with some multiscale settings.
-        # We will put it in the meta data.
-        job = Job().findOne({'_id': result.job['_id']})
-        multiscale_io = {
-            'meta': {
-                'multiscale_settings': {
-                    'inputFolderId': inputFolderId,
-                    'outputFolderId': outputFolderId
-                }
-            }
-        }
-
-        return Job().updateJob(job, otherFields=multiscale_io)
+        # Set the multiscale meta data and return the job
+        jobId = result.job['_id']
+        return utils.setMultiscaleMetaData(jobId, inputFolderId,
+                                           outputFolderId)
 
     @access.token
     @filtermodel(model=Job)
@@ -170,16 +154,7 @@ class MultiscaleEndpoints(Resource):
                     volumepath,
                     outputFolderId)])
 
-        # We want to update the job with some multiscale settings.
-        # We will put it in the meta data.
-        job = Job().findOne({'_id': result.job['_id']})
-        multiscale_io = {
-            'meta': {
-                'multiscale_settings': {
-                    'inputFolderId': inputFolderId,
-                    'outputFolderId': outputFolderId
-                }
-            }
-        }
-
-        return Job().updateJob(job, otherFields=multiscale_io)
+        # Set the multiscale meta data and return the job
+        jobId = result.job['_id']
+        return utils.setMultiscaleMetaData(jobId, inputFolderId,
+                                           outputFolderId)
