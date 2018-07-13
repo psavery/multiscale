@@ -11,6 +11,7 @@ class MultiscaleUtils:
     """Utility functions for performing multiscale operations on girder."""
 
     RUN_ALBANY_PATH = '/multiscale/run_albany'
+    RUN_DREAM3D_PATH = '/multiscale/run_dream3d'
     RUN_SMTK_MESH_PLACEMENT_PATH = '/multiscale/run_smtk_mesh_placement'
 
     BASE_FOLDER_NAME = 'multiscale_data'
@@ -214,6 +215,23 @@ class MultiscaleUtils:
             'outputFolderId': outputFolderId
         }
         return self.gc.post(MultiscaleUtils.RUN_ALBANY_PATH, parameters=params)
+
+    def runDream3DJob(self, inputFolderId, outputFolderId):
+        """Run Dream3D's 'PipelineRunner' on a json file.
+
+        inputFolderId is the ID of the input folder.
+        outputFolderId is the ID of the output folder.
+
+        Note: all output should be saved in an 'output' directory.
+        All contents of this directory will be sent to the girder
+        output folder.
+        """
+        params = {
+            'inputFolderId': inputFolderId,
+            'outputFolderId': outputFolderId
+        }
+        return self.gc.post(MultiscaleUtils.RUN_DREAM3D_PATH,
+                            parameters=params)
 
     def runSmtkMeshPlacementJob(self, inputFolderId, outputFolderId):
         """Run an smtk mesh placement job on the girder server.

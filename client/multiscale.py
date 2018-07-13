@@ -16,6 +16,7 @@ import girder_client
 from girder_client import HttpError
 
 from calculations.albany import submitAlbanyCalculation
+from calculations.dream3d import submitDream3DJob
 from calculations.smtk_mesh_placement import submitSmtkMeshPlacement
 
 from utilities.folder_utils import FolderUtils
@@ -29,6 +30,7 @@ DEFAULT_API_URL = 'http://localhost:8080/api/v1'
 
 supportedCalculations = [
     'albany',
+    'dream3d',
     'smtk'
 ]
 
@@ -83,6 +85,8 @@ def submitFunc(gc, args):
         submitAlbanyCalculation(gc, inputDir)
     elif calcType == 'smtk':
         submitSmtkMeshPlacement(gc, inputDir)
+    elif calcType == 'dream3d':
+        submitDream3DJob(gc, inputDir)
     else:
         print('Error: unsupported calculation type:', calcType)
 
@@ -117,7 +121,7 @@ def listFunc(gc, args):
     print('=' * 59)
     for jobId in jobList.keys():
         print('{:30s} {:12s} {:15s}'.format(jobId, jobList[jobId],
-                                           ju.getWallTime(jobId)))
+                                            ju.getWallTime(jobId)))
 
 
 def logFunc(gc, args):

@@ -18,6 +18,7 @@ from girder_worker.docker.transforms.girder import (
 from girder.plugins.jobs.models.job import Job
 
 ALBANY_IMAGE = 'openchemistry/albany'
+DREAM3D_IMAGE = 'psavery/dream3d'
 SMTK_IMAGE = 'psavery/smtk'
 
 
@@ -29,6 +30,8 @@ class MultiscaleEndpoints(Resource):
         super(MultiscaleEndpoints, self).__init__()
         self.route('POST', ('run_albany', ),
                    self.run_albany)
+        self.route('POST', ('run_dream3d', ),
+                   self.run_dream3d)
         self.route('POST', ('run_smtk_mesh_placement', ),
                    self.run_smtk_mesh_placement)
 
@@ -62,6 +65,54 @@ class MultiscaleEndpoints(Resource):
             ALBANY_IMAGE, pull_image=False, container_args=[filename],
             entrypoint='/usr/local/albany/bin/AlbanyT', remove_container=True,
             working_dir=volume,
+            girder_result_hooks=[
+                GirderUploadVolumePathToFolder(volumepath, outputFolderId)
+            ])
+
+        # We want to update the job with some multiscale settings.
+        # We will put it in the meta data.
+        job = Job().findOne({'_id': result.job['_id']})
+        multiscale_io = {
+            'meta': {
+                'multiscale_settings': {
+                    'inputFolderId': inputFolderId,
+                    'outputFolderId': outputFolderId
+                }
+            }
+        }
+
+        return Job().updateJob(job, otherFields=multiscale_io)
+
+    @access.token
+    @filtermodel(model=Job)
+    @autoDescribeRoute(
+        Description('Run Dream3D from a girder folder')
+        .param('inputFolderId', 'The id of the input folder on girder.'
+               '"input.json" must be inside, along with any other '
+               'necessary input files. Note: all output must be saved '
+               'in a directory called \'./output/\' - only files from this '
+               'directory will be uploaded to the output folder on girder.',
+               paramType='query', dataType='string', required='True')
+        .param('outputFolderId', 'The id of the output folder on girder.',
+               paramType='query', dataType='string', required='True'))
+    def run_dream3d(self, params):
+        """Run Dream3D on a folder that is on girder.
+
+        Will store the output in the specified output folder.
+        """
+        inputFolderId = params.get('inputFolderId')
+        outputFolderId = params.get('outputFolderId')
+        filename = 'input.json'
+        folder_name = 'workingDir'
+        volume = GirderFolderIdToVolume(
+            inputFolderId,
+            volume=TemporaryVolume.default,
+            folder_name=folder_name)
+        outputDir = inputFolderId + '/' + folder_name + '/output'
+        volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
+        result = docker_run.delay(
+            DREAM3D_IMAGE, pull_image=False, container_args=[filename],
+            remove_container=False, working_dir=volume,
             girder_result_hooks=[
                 GirderUploadVolumePathToFolder(volumepath, outputFolderId)
             ])
