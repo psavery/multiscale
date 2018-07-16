@@ -1,5 +1,8 @@
 """Multiscale utility functions for communicating with girder."""
 
+# Python2 and python3 compatibility
+from __future__ import print_function
+
 from girder_client import HttpError
 
 from .folder_utils import FolderUtils

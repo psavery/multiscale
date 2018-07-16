@@ -1,7 +1,11 @@
 """Query the user with a yes/no question."""
 
 import sys
+USING_PYTHON3 = sys.version_info >= (3, 0)
 
+if not USING_PYTHON3:
+    # raw_input() became input() in python3
+    input = raw_input
 
 def query_yes_no(question, default='yes'):
     """Ask a yes/no question via input() and return their answer.

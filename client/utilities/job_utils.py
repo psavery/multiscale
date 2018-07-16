@@ -1,8 +1,17 @@
 """Job utility functions for communicating with girder."""
 
+# Python2 and python3 compatibility
+from __future__ import print_function
+
 from girder_client import HttpError
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+
+import sys
+USING_PYTHON3 = sys.version_info >= (3, 2)
+
+if USING_PYTHON3:
+    from datetime import timezone
 
 class JobUtils:
     """Utility functions for performing job operations on girder."""
@@ -137,9 +146,15 @@ class JobUtils:
         See this issue:
         https://stackoverflow.com/questions/28331512/how-to-convert-python-isoformat-string-back-into-datetime-object
         """
-        split = isoStr.rsplit(':', 1)
-        modifiedStr = split[0] + split[1]
-        return datetime.strptime(modifiedStr, '%Y-%m-%dT%H:%M:%S.%f%z')
+        if USING_PYTHON3:
+            # Python3 can use %z
+            split = isoStr.rsplit(':', 1)
+            modifiedStr = str(split[0] + split[1])
+            return datetime.strptime(modifiedStr, '%Y-%m-%dT%H:%M:%S.%f%z')
+        else:
+            # Python2 cannot use %z. Remove the timezone characters.
+            modifiedStr = str(isoStr)[:-6]
+            return datetime.strptime(modifiedStr, '%Y-%m-%dT%H:%M:%S.%f')
 
     def getWallTime(self, jobId):
         """Get the elapsed walltime for which a job has been running.
@@ -181,7 +196,11 @@ class JobUtils:
             return ''
 
         if not endTime:
-            endTime = datetime.now(timezone.utc)
+            if USING_PYTHON3:
+                endTime = datetime.now(timezone.utc)
+            else:
+                # Python2 does not have timezone objects
+                endTime = datetime.utcnow()
 
         td = endTime - startTime
         # Remove the microseconds before returning

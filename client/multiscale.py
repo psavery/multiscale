@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 Multiscale client.
@@ -8,6 +8,9 @@ multiscale modeling jobs that are to run on a girder server.
 
 See --help for options.
 """
+
+# Python2 and python3 compatibility
+from __future__ import print_function
 
 import os
 import sys

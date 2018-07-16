@@ -4,6 +4,9 @@ On the girder server, run Dream3D's 'PipelineRunner'
 executable on an input json file.
 """
 
+# Python2 and python3 compatibility
+from __future__ import print_function
+
 from utilities.multiscale_utils import MultiscaleUtils
 
 # Because we need the utilities folder...
