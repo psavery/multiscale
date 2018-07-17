@@ -75,6 +75,10 @@ def getClient(apiUrl, apiKey):
             return None
 
         raise
+    except Exception as e:
+        print("Failed to connect to server.")
+        print("\nThe following error occurred:\n", e)
+        return None
 
     return gc
 
