@@ -94,6 +94,21 @@ def submitFunc(gc, args):
         print('Error: unsupported calculation type:', calcType)
 
 
+def printJobInfo(jobInfoList):
+    """Print a list of job info.
+
+    Each item in the list should be a dictionary with entries
+    'jobId', 'status', and 'time'. This function will print all of the
+    jobs in a consistent format.
+    """
+    print('=' * 59)
+    print('{:30s} {:12s} {:15s}'.format('jobId', 'status', 'run time (wall)'))
+    print('=' * 59)
+    for job in jobInfoList:
+        print('{:30s} {:12s} {:15s}'.format(job['jobId'], job['status'],
+                                            job['time']))
+
+
 def statusFunc(gc, args):
     """Get the status of a multiscale job."""
     jobId = args.job_id
@@ -103,8 +118,13 @@ def statusFunc(gc, args):
     if not statusStr:
         return
 
-    print('jobId:', jobId)
-    print('status:', statusStr)
+    jobInfoDict = {
+        'jobId': jobId,
+        'status': statusStr,
+        'time': ju.getWallTime(jobId)
+    }
+
+    printJobInfo([jobInfoDict])
 
 
 def listFunc(gc, args):
@@ -119,12 +139,15 @@ def listFunc(gc, args):
         print('No jobs found')
         return
 
-    print('=' * 59)
-    print('{:30s} {:12s} {:15s}'.format('jobId', 'status', 'run time (wall)'))
-    print('=' * 59)
+    jobInfoList = []
     for jobId in jobList.keys():
-        print('{:30s} {:12s} {:15s}'.format(jobId, jobList[jobId],
-                                            ju.getWallTime(jobId)))
+        jobInfoDict = {}
+        jobInfoDict['jobId'] = jobId
+        jobInfoDict['status'] = jobList[jobId]
+        jobInfoDict['time'] = ju.getWallTime(jobId)
+        jobInfoList.append(jobInfoDict)
+
+    printJobInfo(jobInfoList)
 
 
 def logFunc(gc, args):
