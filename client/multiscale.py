@@ -86,14 +86,14 @@ def getClient(apiUrl, apiKey):
 def submitFunc(gc, args):
     """Submit a multiscale calculation."""
     calcType = args.calculation_type.lower()
-    inputDir = args.input_dir
+    inputs = args.inputs
 
     if calcType == 'albany':
-        submitAlbanyCalculation(gc, inputDir)
+        submitAlbanyCalculation(gc, inputs)
     elif calcType == 'smtk':
-        submitSmtkMeshPlacement(gc, inputDir)
+        submitSmtkMeshPlacement(gc, inputs)
     elif calcType == 'dream3d':
-        submitDream3DJob(gc, inputDir)
+        submitDream3DJob(gc, inputs)
     else:
         print('Error: unsupported calculation type:', calcType)
 
@@ -294,11 +294,12 @@ if __name__ == '__main__':
             'types are: ' +
             ', '.join(supportedCalculations)))
     submit.add_argument(
-        'input_dir', help=(
+        'inputs', help=(
             'The directory containing all input '
             'files that will be uploaded to '
             'Girder and used for the '
-            'simulation'))
+            'simulation. Alternatively, a variable list of'
+            'files may be used instead of a directory.'), nargs='*')
     submit.set_defaults(func=submitFunc)
 
     status = sub.add_parser('status', help='Get the job status for a '

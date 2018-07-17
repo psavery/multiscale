@@ -14,12 +14,12 @@ import sys
 sys.path.append('..')
 
 
-def submitAlbanyCalculation(gc, inputDir):
+def submitAlbanyCalculation(gc, inputs):
     """Submit an albany calculation on the girder server.
 
     gc should be an authenticated GirderClient object.
-    inputDir is a local input directory that will be uploaded to
-    the girder server.
+    inputs is a local input directory that will be uploaded to
+    the girder server, or a variable list of files.
     """
     mu = MultiscaleUtils(gc)
 
@@ -35,7 +35,7 @@ def submitAlbanyCalculation(gc, inputDir):
     inputFolderId = inputFolder['_id']
     outputFolderId = outputFolder['_id']
 
-    gc.upload(inputDir + '/*', inputFolderId)
+    mu.uploadInputFiles(inputs, inputFolderId)
 
     job = mu.runAlbanyJob(inputFolderId, outputFolderId)
 

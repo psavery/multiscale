@@ -14,12 +14,12 @@ import sys
 sys.path.append('..')
 
 
-def submitDream3DJob(gc, inputDir):
+def submitDream3DJob(gc, inputs):
     """Run Dream3D's 'PipelineRunner' on a json file.
 
     gc should be an authenticated GirderClient object.
-    inputDir is a local input directory that will be uploaded to
-    the girder server.
+    inputs is a local input directory that will be uploaded to
+    the girder server, or a variable list of files.
 
     All output from dream3d should be saved in a directory called
     'output'.
@@ -38,7 +38,7 @@ def submitDream3DJob(gc, inputDir):
     inputFolderId = inputFolder['_id']
     outputFolderId = outputFolder['_id']
 
-    gc.upload(inputDir + '/*', inputFolderId)
+    mu.uploadInputFiles(inputs, inputFolderId)
 
     job = mu.runDream3DJob(inputFolderId, outputFolderId)
 

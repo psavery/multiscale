@@ -9,6 +9,8 @@ from .folder_utils import FolderUtils
 from .job_utils import JobUtils
 from .user_utils import UserUtils
 
+import os
+
 
 class MultiscaleUtils:
     """Utility functions for performing multiscale operations on girder."""
@@ -203,6 +205,26 @@ class MultiscaleUtils:
         print('Downloading output to:', folderName)
 
         self.gc.downloadFolderRecursive(folderId, folderName)
+
+    def uploadInputFiles(self, inputs, inputFolderId):
+        """Upload a local directory or a variable list of files.
+
+        inputs should be a single directory or a list of files to upload.
+
+        The contents of any directories will be uploaded (not the directory
+        itself).
+        """
+        if not isinstance(inputs, list):
+            inputs = [inputs]
+
+        for item in inputs:
+            if os.path.isdir(item):
+                self.gc.upload(item + '/*', inputFolderId)
+            elif os.path.isfile(item):
+                self.gc.upload(item, inputFolderId)
+            else:
+                print('Warning: file/dir does not exist:', item)
+                print('Skipping over unknown file/dir.')
 
     def runAlbanyJob(self, inputFolderId, outputFolderId):
         """Run an albany job on the girder server.
