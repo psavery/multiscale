@@ -138,7 +138,7 @@ class MultiscaleEndpoints(Resource):
             inputFolderId,
             volume=TemporaryVolume.default,
             folder_name=folder_name)
-        outputDir = inputFolderId + '/' + folder_name + '/'
+        outputDir = inputFolderId + '/' + folder_name + '/output/'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
             SMTK_IMAGE,
@@ -146,7 +146,11 @@ class MultiscaleEndpoints(Resource):
             container_args=[
                 '-c',
                 ('. ~/setupEnvironment; '
-                 'python /usr/local/afrl-automation/runner.py input.json')],
+                 'python /usr/local/afrl-automation/runner.py input.json; '
+                 'mkdir output; '
+                 'mv input.yaml output/; '
+                 'mv elastic.yaml output/;'
+                 'mv *BC.exo output/')],
             entrypoint='bash',
             remove_container=True,
             working_dir=volume,
