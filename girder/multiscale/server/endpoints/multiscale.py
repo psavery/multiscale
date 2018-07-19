@@ -103,8 +103,9 @@ class MultiscaleEndpoints(Resource):
         outputDir = inputFolderId + '/' + folder_name + '/output'
         volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
         result = docker_run.delay(
-            DREAM3D_IMAGE, pull_image=False, container_args=[filename],
-            remove_container=True, working_dir=volume,
+            DREAM3D_IMAGE, pull_image=False,
+            container_args=['-c', 'bash /root/runPipelineRunner $(ls *.json | head -1)'],
+            remove_container=True, working_dir=volume, entrypoint='bash',
             girder_result_hooks=[
                 GirderUploadVolumePathToFolder(volumepath, outputFolderId)
             ])
