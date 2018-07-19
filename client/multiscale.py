@@ -215,7 +215,7 @@ def deleteFunc(gc, args):
         ju.cancelJob(jobId)
     if statusStr == 'RUNNING' or statusStr == 'CANCELING':
         print('Job is canceling. Please wait...')
-        while ju.jobStatus(jobId) != 'CANCELED':
+        while ju.jobStatus(jobId) == 'CANCELING':
             continue
 
     ju.deleteJob(jobId)
