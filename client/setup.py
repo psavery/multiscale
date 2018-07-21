@@ -9,10 +9,13 @@ install_reqs = [
     'girder_client>=2.4.0',
 ]
 # FIXME: Add a readme sometime
-#with open('README.rst') as f:
+# with open('README.rst') as f:
 #    readme = f.read()
 
-init = os.path.join(os.path.dirname(__file__), 'multiscale_client', '__init__.py')
+init = os.path.join(
+    os.path.dirname(__file__),
+    'multiscale_client',
+    '__init__.py')
 with open(init) as fd:
     version = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
@@ -23,15 +26,15 @@ setup(
     name='multiscale-client',
     version=version,
     description='Python client for performing multiscale operations.',
-#    long_description=readme,
+    #    long_description=readme,
     author='Patrick Avery',
     author_email='psavery@buffalo.edu',
     url='http://github.com/psavery/multiscale',
-#    license='Apache 2.0',
+    #    license='Apache 2.0',
     classifiers=[
-#        'Development Status :: 3 - Alpha',
+        #        'Development Status :: 3 - Alpha',
         'Environment :: Console',
-#        'License :: OSI Approved :: Apache Software License',
+        #        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3'

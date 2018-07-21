@@ -3,6 +3,7 @@
 # Python2 and python3 compatibility
 from __future__ import print_function
 
+
 class UserUtils:
     """Utility functions for performing user operations on girder."""
 

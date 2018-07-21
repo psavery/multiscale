@@ -13,6 +13,7 @@ USING_PYTHON3 = sys.version_info >= (3, 2)
 if USING_PYTHON3:
     from datetime import timezone
 
+
 class JobUtils:
     """Utility functions for performing job operations on girder."""
 
