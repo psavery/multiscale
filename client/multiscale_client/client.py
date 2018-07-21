@@ -20,7 +20,9 @@ from girder_client import HttpError
 
 from multiscale_client.calculations.albany import submitAlbanyCalculation
 from multiscale_client.calculations.dream3d import submitDream3DJob
-from multiscale_client.calculations.smtk_mesh_placement import submitSmtkMeshPlacement
+from multiscale_client.calculations.smtk_mesh_placement import (
+    submitSmtkMeshPlacement
+)
 
 from multiscale_client.utilities.folder_utils import FolderUtils
 from multiscale_client.utilities.progress_bar import progress_bar
@@ -76,8 +78,8 @@ def getClient(apiUrl, apiKey):
 
         raise
     except Exception as e:
-        print("Failed to connect to server.")
-        print("\nThe following error occurred:\n", e)
+        print('Failed to connect to server.')
+        print('\nThe following error occurred:\n', e)
         return None
 
     return gc
