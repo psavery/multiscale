@@ -41,3 +41,5 @@ def submitAlbanyCalculation(gc, inputs):
 
     print('Job submitted:', job['_id'])
     print('Girder working directory:', baseFolderName + '/' + workingDirName)
+
+    return job['_id']
