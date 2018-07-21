@@ -18,16 +18,16 @@ import sys
 import girder_client
 from girder_client import HttpError
 
-from calculations.albany import submitAlbanyCalculation
-from calculations.dream3d import submitDream3DJob
-from calculations.smtk_mesh_placement import submitSmtkMeshPlacement
+from multiscale_client.calculations.albany import submitAlbanyCalculation
+from multiscale_client.calculations.dream3d import submitDream3DJob
+from multiscale_client.calculations.smtk_mesh_placement import submitSmtkMeshPlacement
 
-from utilities.folder_utils import FolderUtils
-from utilities.progress_bar import progress_bar
-from utilities.job_utils import JobUtils
-from utilities.multiscale_utils import MultiscaleUtils
-from utilities.user_utils import UserUtils
-from utilities.query_yes_no import query_yes_no
+from multiscale_client.utilities.folder_utils import FolderUtils
+from multiscale_client.utilities.progress_bar import progress_bar
+from multiscale_client.utilities.job_utils import JobUtils
+from multiscale_client.utilities.multiscale_utils import MultiscaleUtils
+from multiscale_client.utilities.user_utils import UserUtils
+from multiscale_client.utilities.query_yes_no import query_yes_no
 
 DEFAULT_API_URL = 'http://localhost:8080/api/v1'
 
@@ -267,8 +267,8 @@ def cleanFunc(gc, args):
                 fu.deleteFolder(folderId)
 
 
-if __name__ == '__main__':
-
+def main():
+    """The main client function."""
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -351,3 +351,6 @@ if __name__ == '__main__':
         sys.exit()
 
     args.func(gc, args)
+
+if __name__ == '__main__':
+    main()

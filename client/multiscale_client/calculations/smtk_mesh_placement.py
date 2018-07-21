@@ -1,28 +1,25 @@
-"""Dream3D Pipeline Run.
+"""SMTK Mesh Placement.
 
-On the girder server, run Dream3D's 'PipelineRunner'
-executable on an input json file.
+On the girder server, place a mesh on the test bar
+using the given inputs.
 """
 
 # Python2 and python3 compatibility
 from __future__ import print_function
 
-from utilities.multiscale_utils import MultiscaleUtils
+from ..utilities.multiscale_utils import MultiscaleUtils
 
 # Because we need the utilities folder...
 import sys
 sys.path.append('..')
 
 
-def submitDream3DJob(gc, inputs):
-    """Run Dream3D's 'PipelineRunner' on a json file.
+def submitSmtkMeshPlacement(gc, inputs):
+    """Submit an smtk mesh placement on the girder server.
 
     gc should be an authenticated GirderClient object.
     inputs is a local input directory that will be uploaded to
     the girder server, or a variable list of files.
-
-    All output from dream3d should be saved in a directory called
-    'output'.
     """
     mu = MultiscaleUtils(gc)
 
@@ -40,7 +37,7 @@ def submitDream3DJob(gc, inputs):
 
     mu.uploadInputFiles(inputs, inputFolderId)
 
-    job = mu.runDream3DJob(inputFolderId, outputFolderId)
+    job = mu.runSmtkMeshPlacementJob(inputFolderId, outputFolderId)
 
     print('Job submitted:', job['_id'])
     print('Girder working directory:', baseFolderName + '/' + workingDirName)
