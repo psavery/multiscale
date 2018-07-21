@@ -192,6 +192,8 @@ class MultiscaleUtils:
 
         self.gc.downloadFolderRecursive(folderId, folderName)
 
+        return folderName
+
     def downloadJobOutput(self, jobId):
         """Download the job output folder for a specified job id."""
         outputFolder = self.getOutputFolder(jobId)
@@ -205,6 +207,8 @@ class MultiscaleUtils:
         print('Downloading output to:', folderName)
 
         self.gc.downloadFolderRecursive(folderId, folderName)
+
+        return folderName
 
     def uploadInputFiles(self, inputs, inputFolderId):
         """Upload a local directory or a variable list of files.
