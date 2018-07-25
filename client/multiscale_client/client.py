@@ -18,12 +18,6 @@ import sys
 import girder_client
 from girder_client import HttpError
 
-from multiscale_client.calculations.albany import submitAlbanyCalculation
-from multiscale_client.calculations.dream3d import submitDream3DJob
-from multiscale_client.calculations.smtk_mesh_placement import (
-    submitSmtkMeshPlacement
-)
-
 from multiscale_client.utilities.folder_utils import FolderUtils
 from multiscale_client.utilities.progress_bar import progress_bar
 from multiscale_client.utilities.job_utils import JobUtils
@@ -33,12 +27,7 @@ from multiscale_client.utilities.query_yes_no import query_yes_no
 
 DEFAULT_API_URL = 'http://localhost:8080/api/v1'
 
-supportedCalculations = [
-    'albany',
-    'dream3d',
-    'smtk'
-]
-
+SUPPORTED_CALCULATIONS = MultiscaleUtils.CALCULATION_REST_PATHS.keys()
 
 def getClient(apiUrl, apiKey):
     """Get an authenticated GirderClient object.
@@ -90,14 +79,19 @@ def submitFunc(gc, args):
     calcType = args.calculation_type.lower()
     inputs = args.inputs
 
-    if calcType == 'albany':
-        submitAlbanyCalculation(gc, inputs)
-    elif calcType == 'smtk':
-        submitSmtkMeshPlacement(gc, inputs)
-    elif calcType == 'dream3d':
-        submitDream3DJob(gc, inputs)
-    else:
+    # Is this a valid calculation type?
+    if calcType not in SUPPORTED_CALCULATIONS:
         print('Error: unsupported calculation type:', calcType)
+        print('Supported calculations are as follows:')
+        for calc in SUPPORTED_CALCULATIONS:
+            print(calc)
+        print()
+        return
+
+    restPath = MultiscaleUtils.CALCULATION_REST_PATHS[calcType]
+
+    mu = MultiscaleUtils(gc)
+    mu.submitCalculation(restPath, inputs)
 
 
 def printJobInfo(jobInfoList):
@@ -294,7 +288,7 @@ def main():
             'The type of simulation to '
             'perform. Current supported '
             'types are: ' +
-            ', '.join(supportedCalculations)))
+            ', '.join(SUPPORTED_CALCULATIONS)))
     submit.add_argument(
         'inputs', help=(
             'The directory containing all input '

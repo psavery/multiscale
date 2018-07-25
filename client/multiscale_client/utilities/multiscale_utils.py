@@ -15,9 +15,11 @@ import os
 class MultiscaleUtils:
     """Utility functions for performing multiscale operations on girder."""
 
-    RUN_ALBANY_PATH = '/multiscale/run_albany'
-    RUN_DREAM3D_PATH = '/multiscale/run_dream3d'
-    RUN_SMTK_MESH_PLACEMENT_PATH = '/multiscale/run_smtk_mesh_placement'
+    CALCULATION_REST_PATHS = {
+        'albany': '/multiscale/run_albany',
+        'dream3d': '/multiscale/run_dream3d',
+        'smtk': '/multiscale/run_smtk_mesh_placement'
+    }
 
     BASE_FOLDER_NAME = 'multiscale_data'
     MAX_JOBS = 10000
@@ -230,50 +232,42 @@ class MultiscaleUtils:
                 print('Warning: file/dir does not exist:', item)
                 print('Skipping over unknown file/dir.')
 
-    def runAlbanyJob(self, inputFolderId, outputFolderId):
-        """Run an albany job on the girder server.
+    def submitCalculation(self, restPath, inputs):
+        """Submit a given calculation to the girder server.
 
-        inputFolderId is the ID of the input folder.
-        outputFolderId is the ID of the output folder.
+        'restPath' should be one of the rest paths given at the top of
+        this class definition in 'CALCULATION_REST_PATHS'
 
-        After albany completes, the output will be sent to
-        the outputFolder.
+        'inputs' should be a list of input files or directories. Input files
+        will be uploaded directly. A directory will have its contents
+        uploaded.
         """
+
+        baseFolderName = MultiscaleUtils.BASE_FOLDER_NAME
+
+        # Create a new working directory... job_1, job_2, etc.
+        workingFolder = self.createNewJobFolder()
+        workingFolderName = workingFolder['name']
+        workingFolderId = workingFolder['_id']
+
+        # Create an input and output folder in the working directory
+        inputFolder = self.gc.createFolder(workingFolderId, 'input')
+        outputFolder = self.gc.createFolder(workingFolderId, 'output')
+
+        inputFolderId = inputFolder['_id']
+        outputFolderId = outputFolder['_id']
+
         params = {
             'inputFolderId': inputFolderId,
             'outputFolderId': outputFolderId
         }
-        return self.gc.post(MultiscaleUtils.RUN_ALBANY_PATH, parameters=params)
 
-    def runDream3DJob(self, inputFolderId, outputFolderId):
-        """Run Dream3D's 'PipelineRunner' on a json file.
+        # Upload the jobs and submit
+        self.uploadInputFiles(inputs, inputFolderId)
+        job = self.gc.post(restPath, parameters=params)
 
-        inputFolderId is the ID of the input folder.
-        outputFolderId is the ID of the output folder.
+        print('Job submitted:', job['_id'])
+        print('Girder working directory:',
+              baseFolderName + '/' + workingFolderName)
 
-        Note: all output should be saved in an 'output' directory.
-        All contents of this directory will be sent to the girder
-        output folder.
-        """
-        params = {
-            'inputFolderId': inputFolderId,
-            'outputFolderId': outputFolderId
-        }
-        return self.gc.post(MultiscaleUtils.RUN_DREAM3D_PATH,
-                            parameters=params)
-
-    def runSmtkMeshPlacementJob(self, inputFolderId, outputFolderId):
-        """Run an smtk mesh placement job on the girder server.
-
-        inputFolderId is the ID of the input folder.
-        outputFolderId is the ID of the output folder.
-
-        After smtk completes, the output will be sent to
-        the outputFolder.
-        """
-        params = {
-            'inputFolderId': inputFolderId,
-            'outputFolderId': outputFolderId
-        }
-        return self.gc.post(MultiscaleUtils.RUN_SMTK_MESH_PLACEMENT_PATH,
-                            parameters=params)
+        return job['_id']
