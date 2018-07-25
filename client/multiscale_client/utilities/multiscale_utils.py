@@ -18,7 +18,8 @@ class MultiscaleUtils:
     CALCULATION_REST_PATHS = {
         'albany': '/multiscale/run_albany',
         'dream3d': '/multiscale/run_dream3d',
-        'smtk': '/multiscale/run_smtk_mesh_placement'
+        'smtk': '/multiscale/run_smtk_mesh_placement',
+        'test': '/multiscale/run_test'
     }
 
     BASE_FOLDER_NAME = 'multiscale_data'

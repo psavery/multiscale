@@ -29,12 +29,61 @@ class MultiscaleEndpoints(Resource):
     def __init__(self):
         """Initialize the various routes."""
         super(MultiscaleEndpoints, self).__init__()
+        self.route('POST', ('run_test', ),
+                   self.run_test)
         self.route('POST', ('run_albany', ),
                    self.run_albany)
         self.route('POST', ('run_dream3d', ),
                    self.run_dream3d)
         self.route('POST', ('run_smtk_mesh_placement', ),
                    self.run_smtk_mesh_placement)
+
+    @access.token
+    @filtermodel(model=Job)
+    @autoDescribeRoute(
+        Description('Run a test')
+        .param('inputFolderId', 'The id of the input folder on girder. '
+                                'Needs to contain "test.in"',
+               paramType='query', dataType='string', required='True')
+        .param('outputFolderId', 'The id of the output folder on girder. '
+                                 '"test.out" will be uploaded to this folder',
+               paramType='query', dataType='string', required='True'))
+    def run_test(self, params):
+        """Run a test on girder."""
+        # Grab the input and output folder ids
+        inputFolderId = params.get('inputFolderId')
+        outputFolderId = params.get('outputFolderId')
+
+        # Mount a temporary volume on docker of the girder input folder
+        folder_name = 'workingDir'
+        volume = GirderFolderIdToVolume(
+            inputFolderId,
+            volume=TemporaryVolume.default,
+            folder_name=folder_name)
+
+        # Choose what output to upload back to girder
+        outputDir = inputFolderId + '/' + folder_name + '/test.out'
+        volumepath = VolumePath(outputDir, volume=TemporaryVolume.default)
+
+        # Run it
+        result = docker_run.delay(
+            ALBANY_IMAGE, entrypoint='bash',
+            container_args=[
+                '-c',
+                ('echo "stdout goes into the job log" && '
+                 'cat test.in > test.out && '
+                 'echo "Job completed!" >> test.out')
+            ],
+            pull_image=False, remove_container=True,
+            working_dir=volume,
+            girder_result_hooks=[
+                GirderUploadVolumePathToFolder(volumepath, outputFolderId)
+            ])
+
+        # Set the multiscale meta data and return the job
+        jobId = result.job['_id']
+        return utils.setMultiscaleMetaData(jobId, inputFolderId,
+                                           outputFolderId)
 
     @access.token
     @filtermodel(model=Job)
