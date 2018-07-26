@@ -242,7 +242,6 @@ class MultiscaleUtils:
         will be uploaded directly. A directory will have its contents
         uploaded.
         """
-
         baseFolderName = MultiscaleUtils.BASE_FOLDER_NAME
 
         # Create a new working directory... job_1, job_2, etc.

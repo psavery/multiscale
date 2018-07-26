@@ -29,6 +29,7 @@ DEFAULT_API_URL = 'http://localhost:8080/api/v1'
 
 SUPPORTED_CALCULATIONS = MultiscaleUtils.CALCULATION_REST_PATHS.keys()
 
+
 def getClient(apiUrl, apiKey):
     """Get an authenticated GirderClient object.
 
@@ -264,7 +265,7 @@ def cleanFunc(gc, args):
 
 
 def main():
-    """The main client function."""
+    """Perform the main client function."""
     import argparse
 
     parser = argparse.ArgumentParser()

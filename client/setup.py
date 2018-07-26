@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""Setup file for multiscale client."""
+
 import os
 import re
 from setuptools import setup, find_packages
