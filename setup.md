@@ -5,18 +5,19 @@
 # Multiscale Client Setup
 ## Obtain the Multiscale Client
 Dependencies:
- - python3
+ - python2 or python3
  - girder-client
 
 The multiscale client is located in the same repository as the multiscale server. You can obtain it via:
 
 `git clone https://github.com/psavery/multiscale`
 
-The client is `multiscale.py` located in the `client` directory.
+Then, `cd` into the `multiscale` directory, and run `pip install -e .` in order to install the client. You can then
+run the client with the `multiscale-client` executable that should now be in your path.
 
-The primary dependency for the multiscale client is the girder client. You can obtain the girder client
-by either installing it [from the repository](https://github.com/girder/girder/tree/master/clients/python) with
-`pip install -e .`, or by simply using `pip install girder-client`. Make sure you are using python3.
+The primary dependency for the multiscale client is the girder client v2.4.0. Currently, this version of the girder
+client is only available by installing it from 
+[its repository](https://github.com/girder/girder/tree/master/clients/python) with `pip install -e .`.
 
 ## Setup an API Key
 In order to use the multiscale client, you need an api key for the server.
@@ -29,31 +30,32 @@ Before running the multiscale client, set an environment variable named `MULTISC
 value of the key.
 
 ## Run the Multiscale Client
-Before running the multiscale client, sure your api key is set up properly
+Before running the multiscale client, make sure your api key is set up properly
 (see [Setup an API Key](#setup-an-api-key) above).
 You may also wish to set an environment variable for the api url with the environment variable `MULTISCALE_API_URL`
 (the alternative is to specify the api url with the `-u` flag every time you run the client).
 
-The primary dependency for the multiscale client is the girder client. Make sure your python3 environment has access to
+The primary dependency for the multiscale client is the girder client. Make sure your python environment has access to
 the girder client.
 
-The client is called `multiscale.py`, and it is located in the "client" directory of the
+The client is called `multiscale-client`, and should be in your path after running `pip install -e .`
 [multiscale repository](https://github.com/psavery/multiscale).
 
 You can find sample input directories [here](https://github.com/psavery/multiscale/releases/tag/samples).
 
-Simply unzip one of them and run `./multiscale.py submit <command> <unzipped_sample>` for a test. It will upload the data onto the girder
+Simply unzip one of them and run `multiscale-client submit <command> <unzipped_sample>` for a test. It will upload the 
+data onto the girder
 server in a private folder in the root called 'multiscale\_data', and the server should begin the simulation. You can check
-the status of the job with `./multiscale.py list`, and you can check the log with `./multiscale.py log`. When the
-status is `SUCCESS`, you can download the output with `./multiscale.py download <jobId>` (you could also download the input if you
-used the `-i` flag after the `download` argument).
+the status of the job with `multiscale-client list`, and you can check the log with `multiscale-client log <jobId>`. When the
+status is `SUCCESS`, you can download the output with `multiscale-client download <jobId>` (you could also download the 
+input if you used the `-i` flag after the `download` argument).
 
-See `multiscale.py --help` for more info, or `multiscale.py <command> --help` for more info about a specific command.
+See `multiscale-client --help` for more info, or `multiscale-client <command> --help` for more info about a specific command.
 
 # Multiscale Server Setup
 
 The primary dependencies that are needed to get the multiscale server running are as follows:
-- python3
+- python2 or python3
 - mongodb-server
 - rabbitmq-server
 - nodejs
@@ -110,7 +112,7 @@ sudo docker pull openchemistry/smtk
 # Set up the multiscale server
 mkdir multiscale_server
 cd multiscale_server
-virtualenv -p /usr/bin/python3 multiscale_env
+virtualenv -p /usr/bin/python multiscale_env
 source multiscale_env/bin/activate
 
 git clone https://github.com/girder/girder
